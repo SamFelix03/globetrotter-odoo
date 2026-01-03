@@ -10,7 +10,7 @@ export default function BuilderSearchPage() {
   const searchParams = useSearchParams()
   const tripId = params.tripId as string
   const formId = searchParams.get('formId') || ''
-  
+
   const category = searchParams.get('category') as 'travel' | 'activity' | 'stay' | null
   const place = searchParams.get('place') || ''
   const price = searchParams.get('price') || ''
@@ -74,8 +74,8 @@ export default function BuilderSearchPage() {
         res = await fetch(`/api/trips/${tripId}/builder/search-activity`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            place: activityPlace, 
+          body: JSON.stringify({
+            place: activityPlace,
             theme: activityTheme,
             minPrice: activityMinPrice ? parseFloat(activityMinPrice) : null,
             maxPrice: activityMaxPrice ? parseFloat(activityMaxPrice) : null,
@@ -87,13 +87,13 @@ export default function BuilderSearchPage() {
           setIsSearching(false)
           return
         }
-        const dateRangeValue = isDateRange 
-          ? `${startDate}|${endDate}` 
+        const dateRangeValue = isDateRange
+          ? `${startDate}|${endDate}`
           : singleDate || ''
         res = await fetch(`/api/trips/${tripId}/builder/search-stay`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             location: stayLocation,
             minPrice: stayMinPrice ? parseFloat(stayMinPrice) : null,
             maxPrice: stayMaxPrice ? parseFloat(stayMaxPrice) : null,
@@ -128,7 +128,7 @@ export default function BuilderSearchPage() {
       try {
         const cached = localStorage.getItem(cacheKey)
         const formData = cached ? JSON.parse(cached) : {}
-        
+
         if (category === 'travel') {
           // Update form data with selected transportation option
           formData.fromLocation = from
@@ -143,10 +143,10 @@ export default function BuilderSearchPage() {
         } else if (category === 'stay') {
           // Update form data with selected hotel option
           formData.place = option.hotel_name
-          
+
           // Store price per night for recalculation
           const pricePerNight = option.price_numeric
-          
+
           // Calculate total price based on date range
           let totalPrice = pricePerNight
           if (isDateRange && startDate && endDate) {
@@ -161,7 +161,7 @@ export default function BuilderSearchPage() {
           // Store price per night in a way that can be retrieved (we'll use a separate cache key or store in formData)
           formData.pricePerNight = pricePerNight
         }
-        
+
         // Update date fields
         if (isDateRange) {
           formData.startDate = startDate
@@ -174,7 +174,7 @@ export default function BuilderSearchPage() {
           formData.startDate = ''
           formData.endDate = ''
         }
-        
+
         localStorage.setItem(cacheKey, JSON.stringify(formData))
       } catch (error) {
         console.error('Error updating form cache:', error)
@@ -189,8 +189,8 @@ export default function BuilderSearchPage() {
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link 
-            href={`/trips/${tripId}/builder`} 
+          <Link
+            href={`/trips/${tripId}/builder`}
             className="text-green-800 hover:text-green-900"
           >
             ← Back to Builder
@@ -201,7 +201,7 @@ export default function BuilderSearchPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Search {selectedCategory?.name || 'Options'}
           </h1>
-          
+
           {selectedCategory && (
             <div className="mb-4 flex items-center gap-2">
               <span className="text-2xl">{selectedCategory.icon}</span>
@@ -210,7 +210,7 @@ export default function BuilderSearchPage() {
               </span>
             </div>
           )}
-          
+
           {place && (
             <div className="mb-2 text-sm text-gray-600">
               <span className="font-medium">Place:</span> {place}
@@ -233,7 +233,7 @@ export default function BuilderSearchPage() {
             <h2 className="text-xl font-semibold mb-4 text-gray-900">
               Search Transportation Options
             </h2>
-            
+
             <div className="space-y-4 mb-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -261,7 +261,7 @@ export default function BuilderSearchPage() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date / Date Range
@@ -386,7 +386,7 @@ export default function BuilderSearchPage() {
             <h2 className="text-xl font-semibold mb-4 text-gray-900">
               Search Activity Options
             </h2>
-            
+
             <div className="space-y-4 mb-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -524,7 +524,7 @@ export default function BuilderSearchPage() {
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
               Search Hotel Options
             </h2>
-            
+
             <div className="space-y-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
