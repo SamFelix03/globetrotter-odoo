@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { activityId: string } }
+  { params }: { params: Promise<{ activityId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -15,7 +15,7 @@ export async function PUT(
       )
     }
     const supabase = await createClient()
-    const { activityId } = params
+    const { activityId } = await params
     const body = await request.json()
 
     const { data, error } = await supabase
@@ -43,7 +43,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { activityId: string } }
+  { params }: { params: Promise<{ activityId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -54,7 +54,7 @@ export async function DELETE(
       )
     }
     const supabase = await createClient()
-    const { activityId } = params
+    const { activityId } = await params
 
     const { error } = await supabase
       .from('itinerary_activities')

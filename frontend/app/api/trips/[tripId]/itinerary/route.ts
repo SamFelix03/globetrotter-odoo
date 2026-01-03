@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
 
     // Get all stops with their days and activities
     const { data: stops, error: stopsError } = await supabase

@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
 
     const { data, error } = await supabase
       .from('trip_expenses')
@@ -42,7 +42,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -53,7 +53,7 @@ export async function POST(
       )
     }
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
     const body = await request.json()
 
     const { stop_id, day_id, expense_category_id, amount, currency_code, description, expense_date, is_estimated } = body

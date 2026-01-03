@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
 
     const { data, error } = await supabase
       .from('trips')
@@ -56,7 +56,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -68,7 +68,7 @@ export async function PUT(
     }
 
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
     const body = await request.json()
 
     // Check ownership
@@ -126,7 +126,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -138,7 +138,7 @@ export async function DELETE(
     }
 
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
 
     // Check ownership
     const { data: trip } = await supabase

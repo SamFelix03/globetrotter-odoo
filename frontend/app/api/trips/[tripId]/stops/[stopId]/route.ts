@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { tripId: string; stopId: string } }
+  { params }: { params: Promise<{ tripId: string; stopId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -15,7 +15,7 @@ export async function PUT(
       )
     }
     const supabase = await createClient()
-    const { stopId } = params
+    const { stopId } = await params
     const body = await request.json()
 
     const { data, error } = await supabase
@@ -43,7 +43,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { tripId: string; stopId: string } }
+  { params }: { params: Promise<{ tripId: string; stopId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -54,7 +54,7 @@ export async function DELETE(
       )
     }
     const supabase = await createClient()
-    const { stopId } = params
+    const { stopId } = await params
 
     const { error } = await supabase
       .from('trip_stops')

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
     const authUser = await getAuthUser()
@@ -15,7 +15,7 @@ export async function POST(
       )
     }
     const supabase = await createClient()
-    const { tripId } = params
+    const { tripId } = await params
     const body = await request.json()
 
     const { stop_id, day_date, day_number, notes } = body
