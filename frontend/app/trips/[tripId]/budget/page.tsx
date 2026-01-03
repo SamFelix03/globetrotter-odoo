@@ -43,16 +43,16 @@ export default function BudgetPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Loading...</div>
       </div>
     )
   }
 
   if (!budget) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Budget data not found</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Budget data not found</div>
       </div>
     )
   }
@@ -66,48 +66,48 @@ export default function BudgetPage() {
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900 dark:text-green-700">
+          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900">
             ← Back to Trip
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Budget & Cost Breakdown</h1>
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Budget & Cost Breakdown</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-green-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Budget</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-sm text-gray-600">Total Budget</div>
+              <div className="text-2xl font-bold text-gray-900">
                 ${budget.total_budget?.toFixed(2) || '0.00'}
               </div>
             </div>
             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Estimated Cost</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-sm text-gray-600">Estimated Cost</div>
+              <div className="text-2xl font-bold text-gray-900">
                 ${budget.estimated_cost?.toFixed(2) || '0.00'}
               </div>
             </div>
-            <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Days</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">{budget.days || 0}</div>
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="text-sm text-gray-600">Days</div>
+              <div className="text-2xl font-bold text-gray-900">{budget.days || 0}</div>
             </div>
-            <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-              <div className="text-sm text-gray-600 dark:text-gray-400">Avg/Day</div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="text-sm text-gray-600">Avg/Day</div>
+              <div className="text-2xl font-bold text-gray-900">
                 ${budget.avg_cost_per_day?.toFixed(2) || '0.00'}
               </div>
             </div>
           </div>
 
           {budget.is_over_budget && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-6">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
               ⚠️ You are over budget!
             </div>
           )}
 
           {pieData.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Expense Breakdown</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Expense Breakdown</h2>
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   <Pie
@@ -131,15 +131,15 @@ export default function BudgetPage() {
           )}
 
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Expenses by Category</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Expenses by Category</h2>
             <div className="space-y-2">
               {budget.breakdown?.map((item: any) => (
-                <div key={item.category_name} className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div key={item.category_name} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{item.category_name}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">{item.count} expenses</div>
+                    <div className="font-semibold text-gray-900">{item.category_name}</div>
+                    <div className="text-sm text-gray-600">{item.count} expenses</div>
                   </div>
-                  <div className="text-xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-xl font-bold text-gray-900">
                     ${item.total.toFixed(2)}
                   </div>
                 </div>

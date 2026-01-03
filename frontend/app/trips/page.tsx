@@ -59,8 +59,8 @@ export default function TripsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Loading...</div>
       </div>
     )
   }
@@ -136,7 +136,7 @@ export default function TripsPage() {
                     </Link>
                     <button
                       onClick={() => handleDeleteClick(trip.trip_id, trip.trip_name)}
-                      className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                      className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:hover:text-red-300"
                     >
                       Delete
                     </button>

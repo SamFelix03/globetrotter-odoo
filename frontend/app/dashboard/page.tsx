@@ -111,7 +111,7 @@ export default function DashboardPage() {
                     </div>
                   ) : (
                     <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
-                      <Globe className="w-16 h-16 text-green-600" />
+                      <Globe className="w-16 h-16 text-green-800" />
                     </div>
                   )}
                   <div className="p-6">

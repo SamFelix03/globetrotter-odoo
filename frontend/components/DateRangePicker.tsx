@@ -49,12 +49,12 @@ export default function DateRangePicker({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           {label} {required && '*'}
         </label>
       )}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div className="[&_.MuiOutlinedInput-root]:bg-white [&_.MuiOutlinedInput-root]:dark:bg-gray-700 [&_.MuiInputBase-input]:text-gray-900 [&_.MuiInputBase-input]:dark:text-white">
+        <div className="[&_.MuiOutlinedInput-root]:bg-white [&_.MuiInputBase-input]:text-gray-900">
           <MUIDateRangePicker
             value={value}
             onChange={handleChange}
@@ -66,7 +66,7 @@ export default function DateRangePicker({
                     backgroundColor: 'white',
                     '&.Mui-focused': {
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#3b82f6',
+                        borderColor: '#166534', // green-800
                       },
                     },
                   },

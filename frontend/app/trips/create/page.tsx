@@ -53,37 +53,37 @@ export default function CreateTripPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Create New Trip</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Create New Trip</h1>
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="trip_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="trip_name" className="block text-sm font-medium text-gray-700">
               Trip Name *
             </label>
             <input
               type="text"
               id="trip_name"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 bg-white text-gray-900"
               value={formData.trip_name}
               onChange={(e) => setFormData({ ...formData, trip_name: e.target.value })}
             />
           </div>
 
           <div>
-            <label htmlFor="trip_description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="trip_description" className="block text-sm font-medium text-gray-700">
               Description
             </label>
             <textarea
               id="trip_description"
               rows={4}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 bg-white text-gray-900"
               value={formData.trip_description}
               onChange={(e) => setFormData({ ...formData, trip_description: e.target.value })}
             />
@@ -100,7 +100,7 @@ export default function CreateTripPage() {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Cover Photo
             </label>
             {formData.cover_photo_url && (
@@ -108,7 +108,7 @@ export default function CreateTripPage() {
                 <img
                   src={formData.cover_photo_url}
                   alt="Cover preview"
-                  className="w-full h-48 object-cover rounded-lg border border-gray-300 dark:border-gray-700"
+                  className="w-full h-48 object-cover rounded-lg border border-gray-300"
                 />
               </div>
             )}
@@ -116,7 +116,7 @@ export default function CreateTripPage() {
               <button
                 type="button"
                 onClick={() => setShowImageModal(true)}
-                className="px-4 py-2 text-sm font-medium text-green-800 dark:text-green-700 border border-green-800 dark:border-blue-400 rounded-md hover:bg-green-50 dark:hover:bg-blue-900/20"
+                className="px-4 py-2 text-sm font-medium text-green-800 border border-green-800 rounded-md hover:bg-green-50"
               >
                 {formData.cover_photo_url ? 'Change Photo' : 'Upload Photo'}
               </button>
@@ -124,7 +124,7 @@ export default function CreateTripPage() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, cover_photo_url: '' })}
-                  className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50"
                 >
                   Remove
                 </button>
@@ -133,14 +133,14 @@ export default function CreateTripPage() {
           </div>
 
           <div>
-            <label htmlFor="total_budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="total_budget" className="block text-sm font-medium text-gray-700">
               Total Budget (USD)
             </label>
             <input
               type="number"
               id="total_budget"
               step="0.01"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 bg-white text-gray-900"
               value={formData.total_budget}
               onChange={(e) => setFormData({ ...formData, total_budget: e.target.value })}
             />
@@ -154,7 +154,7 @@ export default function CreateTripPage() {
               checked={formData.is_public}
               onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
             />
-            <label htmlFor="is_public" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+            <label htmlFor="is_public" className="ml-2 block text-sm text-gray-700">
               Make this trip public
             </label>
           </div>
@@ -170,7 +170,7 @@ export default function CreateTripPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-base font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              className="px-4 py-2 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
               Cancel
             </button>

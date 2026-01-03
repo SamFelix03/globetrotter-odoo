@@ -141,71 +141,71 @@ export default function BuilderSearchPage() {
         <div className="mb-8">
           <Link 
             href={`/trips/${tripId}/builder`} 
-            className="text-green-800 hover:text-green-900 dark:text-green-700"
+            className="text-green-800 hover:text-green-900"
           >
             ← Back to Builder
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Search {selectedCategory?.name || 'Options'}
           </h1>
           
           {selectedCategory && (
             <div className="mb-4 flex items-center gap-2">
               <span className="text-2xl">{selectedCategory.icon}</span>
-              <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+              <span className="text-lg font-semibold text-gray-700">
                 {selectedCategory.name}
               </span>
             </div>
           )}
           
           {place && (
-            <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="mb-2 text-sm text-gray-600">
               <span className="font-medium">Place:</span> {place}
             </div>
           )}
           {price && (
-            <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="mb-2 text-sm text-gray-600">
               <span className="font-medium">Price:</span> ${price}
             </div>
           )}
           {dateRange && (
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <div className="mb-4 text-sm text-gray-600">
               <span className="font-medium">Date:</span> {dateRange.includes('|') ? dateRange.split('|').join(' - ') : dateRange}
             </div>
           )}
         </div>
 
         {selectedCategory && category === 'travel' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">
               Search Transportation Options
             </h2>
             
             <div className="space-y-4 mb-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     From
                   </label>
                   <input
                     type="text"
                     placeholder="Enter origin location"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={from}
                     onChange={(e) => setFrom(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     To
                   </label>
                   <input
                     type="text"
                     placeholder="Enter destination location"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={to}
                     onChange={(e) => setTo(e.target.value)}
                   />
@@ -213,11 +213,11 @@ export default function BuilderSearchPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date / Date Range
                 </label>
                 <div className="mb-2">
-                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <label className="flex items-center gap-2 text-sm text-gray-600">
                     <input
                       type="checkbox"
                       checked={isDateRange}
@@ -232,14 +232,14 @@ export default function BuilderSearchPage() {
                     <input
                       type="date"
                       placeholder="Start Date"
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                      className="px-3 py-2 border border-gray-300 rounded-md"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
                     />
                     <input
                       type="date"
                       placeholder="End Date"
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                      className="px-3 py-2 border border-gray-300 rounded-md"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                     />
@@ -248,7 +248,7 @@ export default function BuilderSearchPage() {
                   <input
                     type="date"
                     placeholder="Select date"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={singleDate}
                     onChange={(e) => setSingleDate(e.target.value)}
                   />
@@ -264,41 +264,41 @@ export default function BuilderSearchPage() {
               </button>
 
               {error && (
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                  <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-sm text-red-600">{error}</p>
                 </div>
               )}
             </div>
 
             {searchResults && searchResults.transportation_options && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900">
                   Available Options
                 </h3>
                 <div className="space-y-3">
                   {searchResults.transportation_options.map((option: any, index: number) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-green-800 dark:hover:border-green-800 transition-all cursor-pointer"
+                      className="p-4 border border-gray-300 rounded-lg hover:border-green-800 dark:hover:border-green-800 transition-all cursor-pointer"
                       onClick={() => handleSelectOption(option)}
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white capitalize">
+                          <h4 className="font-semibold text-gray-900 capitalize">
                             {option.mode}
                           </h4>
                           {option.provider && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-gray-600">
                               {option.provider}
                             </p>
                           )}
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                          <p className="text-lg font-bold text-gray-900">
                             {option.price}
                           </p>
                           {option.duration && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500">
                               {option.duration}
                             </p>
                           )}
@@ -310,7 +310,7 @@ export default function BuilderSearchPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-xs text-green-800 dark:text-green-700 hover:underline"
+                          className="text-xs text-green-800 hover:underline"
                         >
                           View source
                         </a>
@@ -322,8 +322,8 @@ export default function BuilderSearchPage() {
             )}
 
             {selectedCategory && category !== 'travel' && category !== 'activity' && (
-              <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600">
                   Search functionality for {selectedCategory.name.toLowerCase()} will be implemented in the next step.
                 </p>
               </div>
@@ -332,33 +332,33 @@ export default function BuilderSearchPage() {
         )}
 
         {selectedCategory && category === 'activity' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">
               Search Activity Options
             </h2>
             
             <div className="space-y-4 mb-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Place
                   </label>
                   <input
                     type="text"
                     placeholder="Enter location/place name"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={activityPlace}
                     onChange={(e) => setActivityPlace(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Theme
                   </label>
                   <input
                     type="text"
                     placeholder="e.g., lunch, adventure, culture"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={activityTheme}
                     onChange={(e) => setActivityTheme(e.target.value)}
                   />
@@ -374,52 +374,52 @@ export default function BuilderSearchPage() {
               </button>
 
               {error && (
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                  <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-sm text-red-600">{error}</p>
                 </div>
               )}
             </div>
 
             {searchResults && searchResults.activities && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900">
                   Available Activities
                 </h3>
                 <div className="space-y-3">
                   {searchResults.activities.map((activity: any, index: number) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-green-800 dark:hover:border-green-800 transition-all cursor-pointer"
+                      className="p-4 border border-gray-300 rounded-lg hover:border-green-800 dark:hover:border-green-800 transition-all cursor-pointer"
                       onClick={() => handleSelectOption(activity)}
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                          <h4 className="font-semibold text-gray-900">
                             {activity.activity_name}
                           </h4>
                           {activity.description && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-sm text-gray-600 mt-1">
                               {activity.description}
                             </p>
                           )}
                           {activity.category && (
-                            <span className="inline-block mt-2 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                            <span className="inline-block mt-2 px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
                               {activity.category}
                             </span>
                           )}
                           {activity.rating && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 mt-1">
                               ⭐ {activity.rating}/5
                             </p>
                           )}
                           {activity.address && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 mt-1">
                               📍 {activity.address}
                             </p>
                           )}
                         </div>
                         <div className="text-right ml-4">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                          <p className="text-lg font-bold text-gray-900">
                             {activity.price}
                           </p>
                         </div>
@@ -430,7 +430,7 @@ export default function BuilderSearchPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-xs text-green-800 dark:text-green-700 hover:underline"
+                          className="text-xs text-green-800 hover:underline"
                         >
                           View source
                         </a>
@@ -444,12 +444,12 @@ export default function BuilderSearchPage() {
         )}
 
         {selectedCategory && category !== 'travel' && category !== 'activity' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">
               Search Results for {selectedCategory.name}
             </h2>
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
                 Search functionality for {selectedCategory.name.toLowerCase()} will be implemented in the next step.
               </p>
             </div>

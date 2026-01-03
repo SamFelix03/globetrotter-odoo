@@ -67,8 +67,8 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Loading...</div>
       </div>
     )
   }
@@ -76,11 +76,11 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Profile & Settings</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Profile & Settings</h1>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Profile Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
             {!editing && (
               <button
                 onClick={() => setEditing(true)}
@@ -98,11 +98,11 @@ export default function ProfilePage() {
                 <img
                   src={user.profile_photo_url}
                   alt="Profile"
-                  className="w-32 h-32 object-cover rounded-full border-2 border-gray-300 dark:border-gray-700"
+                  className="w-32 h-32 object-cover rounded-full border-2 border-gray-300"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  <span className="text-gray-500 dark:text-gray-400 text-4xl">👤</span>
+                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500 text-4xl">👤</span>
                 </div>
               )}
             </div>
@@ -111,18 +111,18 @@ export default function ProfilePage() {
           {editing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700">
                   Full Name
                 </label>
                 <input
                   type="text"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                 />
               </div>
               <div className="flex flex-col items-center">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 text-center">
+                <label className="block text-sm font-medium text-gray-700 mb-4 text-center">
                   Profile Photo
                 </label>
                 {formData.profile_photo_url && (
@@ -130,7 +130,7 @@ export default function ProfilePage() {
                     <img
                       src={formData.profile_photo_url}
                       alt="Profile preview"
-                      className="w-32 h-32 object-cover rounded-full border-2 border-gray-300 dark:border-gray-700 mx-auto"
+                      className="w-32 h-32 object-cover rounded-full border-2 border-gray-300 mx-auto"
                     />
                   </div>
                 )}
@@ -138,7 +138,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setShowImageModal(true)}
-                    className="px-4 py-2 text-sm font-medium text-green-800 dark:text-green-700 border border-green-800 dark:border-blue-400 rounded-md hover:bg-green-50 dark:hover:bg-blue-900/20"
+                    className="px-4 py-2 text-sm font-medium text-green-800 border border-green-800 rounded-md hover:bg-green-50"
                   >
                     {formData.profile_photo_url ? 'Change Photo' : 'Upload Photo'}
                   </button>
@@ -146,7 +146,7 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, profile_photo_url: '' })}
-                      className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                      className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 dark:border-red-400 rounded-md hover:bg-red-50"
                     >
                       Remove
                     </button>
@@ -154,11 +154,11 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700">
                   Language Preference
                 </label>
                 <select
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                   value={formData.language_preference}
                   onChange={(e) => setFormData({ ...formData, language_preference: e.target.value })}
                 >
@@ -180,7 +180,7 @@ export default function ProfilePage() {
                     setEditing(false)
                     fetchProfile()
                   }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
+                  className="px-4 py-2 border border-gray-300 rounded-md"
                 >
                   Cancel
                 </button>
@@ -189,35 +189,35 @@ export default function ProfilePage() {
           ) : (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-2">Email</label>
-                <div className="mt-1 text-gray-900 dark:text-white text-center">{user?.email}</div>
+                <label className="block text-sm font-medium text-gray-700 text-center mb-2">Email</label>
+                <div className="mt-1 text-gray-900 text-center">{user?.email}</div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-2">Full Name</label>
-                <div className="mt-1 text-gray-900 dark:text-white text-center">{user?.full_name || 'Not set'}</div>
+                <label className="block text-sm font-medium text-gray-700 text-center mb-2">Full Name</label>
+                <div className="mt-1 text-gray-900 text-center">{user?.full_name || 'Not set'}</div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-2">Language</label>
-                <div className="mt-1 text-gray-900 dark:text-white text-center">{user?.language_preference || 'en'}</div>
+                <label className="block text-sm font-medium text-gray-700 text-center mb-2">Language</label>
+                <div className="mt-1 text-gray-900 text-center">{user?.language_preference || 'en'}</div>
               </div>
             </div>
           )}
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Saved Destinations</h2>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Saved Destinations</h2>
           {savedDestinations.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">No saved destinations yet.</p>
+            <p className="text-gray-500">No saved destinations yet.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {savedDestinations.map((dest) => (
                 <div key={dest.saved_destination_id} className="border rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-semibold text-gray-900">
                     {dest.cities?.city_name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{dest.cities?.country}</p>
+                  <p className="text-sm text-gray-600">{dest.cities?.country}</p>
                   {dest.notes && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{dest.notes}</p>
+                    <p className="text-sm text-gray-500 mt-2">{dest.notes}</p>
                   )}
                 </div>
               ))}

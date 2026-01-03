@@ -56,19 +56,19 @@ export default function ActivitySearchPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Search Activities</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Search Activities</h1>
 
-        <form onSubmit={handleSearch} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+        <form onSubmit={handleSearch} className="bg-white rounded-lg shadow p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <input
               type="text"
               placeholder="Search activities..."
-              className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+              className="px-3 py-2 border border-gray-300 rounded-md"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <select
-              className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+              className="px-3 py-2 border border-gray-300 rounded-md"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
             >
@@ -89,23 +89,23 @@ export default function ActivitySearchPage() {
         </form>
 
         {loading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="text-center py-12 text-gray-600">Loading...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activities.map((activity) => (
               <div
                 key={activity.activity_id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
               >
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {activity.activity_name}
                 </h3>
                 {activity.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-3">
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-3">
                     {activity.description}
                   </p>
                 )}
-                <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <div className="flex gap-4 text-sm text-gray-600 mb-2">
                   {activity.estimated_cost && (
                     <span>${activity.estimated_cost}</span>
                   )}
@@ -118,7 +118,7 @@ export default function ActivitySearchPage() {
                     href={activity.booking_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-green-800 hover:text-green-900 dark:text-green-700 text-sm"
+                    className="text-green-800 hover:text-green-900 text-sm"
                   >
                     Book Now →
                   </a>

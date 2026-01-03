@@ -41,16 +41,16 @@ export default function TripViewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Loading...</div>
       </div>
     )
   }
 
   if (!trip) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Trip not found</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Trip not found</div>
       </div>
     )
   }
@@ -59,19 +59,19 @@ export default function TripViewPage() {
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href="/trips" className="text-green-800 hover:text-green-900 dark:text-green-700">
+          <Link href="/trips" className="text-green-800 hover:text-green-900">
             ← Back to Trips
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             {trip.trip_name}
           </h1>
           {trip.trip_description && (
-            <p className="text-gray-600 dark:text-gray-400 mb-4">{trip.trip_description}</p>
+            <p className="text-gray-600 mb-4">{trip.trip_description}</p>
           )}
-          <div className="flex gap-6 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex gap-6 text-sm text-gray-600">
             <span>
               {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}
             </span>
@@ -90,13 +90,13 @@ export default function TripViewPage() {
           </Link>
           <Link
             href={`/trips/${tripId}/budget`}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
           >
             View Budget
           </Link>
           <Link
             href={`/trips/${tripId}/calendar`}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
           >
             View Calendar
           </Link>
@@ -104,11 +104,11 @@ export default function TripViewPage() {
 
         <div className="space-y-8">
           {itinerary.map((stop: any) => (
-            <div key={stop.stop_id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+            <div key={stop.stop_id} className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
                 {stop.cities?.city_name}, {stop.cities?.country}
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-sm text-gray-600 mb-4">
                 {new Date(stop.arrival_date).toLocaleDateString()} - {new Date(stop.departure_date).toLocaleDateString()}
               </p>
 
@@ -116,13 +116,13 @@ export default function TripViewPage() {
                 <div className="space-y-4">
                   {stop.itinerary_days.map((day: any) => (
                     <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                      <h3 className="font-semibold text-gray-900">
                         Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
                       </h3>
                       {day.itinerary_activities && day.itinerary_activities.length > 0 && (
                         <div className="mt-2 space-y-2">
                           {day.itinerary_activities.map((activity: any) => (
-                            <div key={activity.itinerary_activity_id} className="text-sm text-gray-600 dark:text-gray-400">
+                            <div key={activity.itinerary_activity_id} className="text-sm text-gray-600">
                               {activity.start_time && activity.end_time && (
                                 <span className="font-medium">
                                   {activity.start_time} - {activity.end_time}:{' '}

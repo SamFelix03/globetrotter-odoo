@@ -65,16 +65,16 @@ export default function CalendarPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Loading...</div>
       </div>
     )
   }
 
   if (!trip) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Trip not found</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Trip not found</div>
       </div>
     )
   }
@@ -91,27 +91,27 @@ export default function CalendarPage() {
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900 dark:text-green-700">
+          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900">
             ← Back to Trip
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Trip Calendar</h1>
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Trip Calendar</h1>
 
           <div className="mb-6 flex justify-between items-center">
             <button
               onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
             >
               Previous
             </button>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               {format(currentMonth, 'MMMM yyyy')}
             </h2>
             <button
               onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
             >
               Next
             </button>
@@ -119,7 +119,7 @@ export default function CalendarPage() {
 
           <div className="grid grid-cols-7 gap-2 mb-4">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center font-semibold text-gray-700 dark:text-gray-300">
+              <div key={day} className="text-center font-semibold text-gray-700">
                 {day}
               </div>
             ))}
@@ -137,16 +137,16 @@ export default function CalendarPage() {
                   className={`min-h-24 p-2 border rounded ${
                     isTripDay
                       ? 'bg-green-50 dark:bg-blue-900/20 border-green-300 dark:border-blue-700'
-                      : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                      : 'bg-gray-50 border-gray-200'
                   } ${!isCurrentMonth ? 'opacity-50' : ''}`}
                 >
-                  <div className={`text-sm font-medium ${isTripDay ? 'text-green-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'}`}>
+                  <div className={`text-sm font-medium ${isTripDay ? 'text-green-900 dark:text-blue-300' : 'text-gray-600'}`}>
                     {format(day, 'd')}
                   </div>
                   {activities.length > 0 && (
                     <div className="mt-1 space-y-1">
                       {activities.slice(0, 2).map((activity, idx) => (
-                        <div key={idx} className="text-xs bg-white dark:bg-gray-800 p-1 rounded truncate">
+                        <div key={idx} className="text-xs bg-white p-1 rounded truncate">
                           {activity.activities?.activity_name || activity.custom_activity_name}
                         </div>
                       ))}
@@ -161,20 +161,20 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Timeline View</h2>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Timeline View</h2>
           <div className="space-y-4">
             {tripDays.map((day) => {
               const activities = getActivitiesForDate(day)
               return (
                 <div key={day.toISOString()} className="border-l-2 border-green-800 pl-4">
-                  <div className="font-semibold text-gray-900 dark:text-white">
+                  <div className="font-semibold text-gray-900">
                     {format(day, 'EEEE, MMMM d, yyyy')}
                   </div>
                   {activities.length > 0 ? (
                     <div className="mt-2 space-y-2">
                       {activities.map((activity, idx) => (
-                        <div key={idx} className="text-sm text-gray-600 dark:text-gray-400">
+                        <div key={idx} className="text-sm text-gray-600">
                           {activity.start_time && activity.end_time && (
                             <span className="font-medium">
                               {activity.start_time} - {activity.end_time}:{' '}

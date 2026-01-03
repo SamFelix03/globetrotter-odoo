@@ -103,8 +103,8 @@ export default function ItineraryBuilderPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-gray-600">Loading...</div>
       </div>
     )
   }
@@ -113,13 +113,13 @@ export default function ItineraryBuilderPage() {
     <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900 dark:text-green-700">
+          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900">
             ← Back to Trip
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Itinerary Builder: {trip?.trip_name}
           </h1>
           <button
@@ -270,12 +270,12 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative">
-      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Add Section</h2>
+    <div className="bg-white rounded-lg shadow p-6 relative">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900">Add Section</h2>
 
       {/* Category Selection */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
           Select Category
         </label>
         <div className="grid grid-cols-3 gap-3">
@@ -285,11 +285,11 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
               onClick={() => setSelectedCategory(category.id as 'travel' | 'activity' | 'stay')}
               className={`p-4 rounded-lg border-2 transition-all text-center ${selectedCategory === category.id
                 ? 'border-green-800 bg-green-50 dark:bg-blue-900/20'
-                : 'border-gray-300 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-800'
+                : 'border-gray-300 hover:border-green-300 dark:hover:border-green-800'
                 }`}
             >
               <div className="text-2xl mb-1">{category.icon}</div>
-              <div className="text-sm font-semibold text-gray-900 dark:text-white">
+              <div className="text-sm font-semibold text-gray-900">
                 {category.name}
               </div>
             </button>
@@ -305,25 +305,25 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     From
                   </label>
                   <input
                     type="text"
                     placeholder="Enter origin location"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={fromLocation}
                     onChange={(e) => setFromLocation(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     To
                   </label>
                   <input
                     type="text"
                     placeholder="Enter destination location"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={toLocation}
                     onChange={(e) => setToLocation(e.target.value)}
                   />
@@ -331,7 +331,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Transportation Mode
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -342,7 +342,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
                       onClick={() => setSelectedTransportMode(mode)}
                       className={`px-4 py-2 rounded-md border-2 transition-all capitalize ${selectedTransportMode === mode
                         ? 'border-green-800 bg-green-50 dark:bg-blue-900/20 text-green-900 dark:text-blue-300'
-                        : 'border-gray-300 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-800'
+                        : 'border-gray-300 hover:border-green-300 dark:hover:border-green-800'
                         }`}
                     >
                       {mode}
@@ -356,13 +356,13 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
           {/* Activity-specific field */}
           {selectedCategory === 'activity' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Activity Name
               </label>
               <input
                 type="text"
                 placeholder="Enter activity name"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 value={place}
                 onChange={(e) => setPlace(e.target.value)}
               />
@@ -372,13 +372,13 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
           {/* Stay category - show Place */}
           {selectedCategory === 'stay' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Place
               </label>
               <input
                 type="text"
                 placeholder="Enter place name"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 value={place}
                 onChange={(e) => setPlace(e.target.value)}
               />
@@ -386,13 +386,13 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Price
             </label>
             <input
               type="number"
               placeholder="Enter price"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               min="0"
@@ -416,7 +416,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
       <div className="flex justify-end gap-2">
         <button
           onClick={onClose}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
         >
           Cancel
         </button>
@@ -505,14 +505,14 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-xl font-semibold text-gray-900">
           {stop.cities?.city_name}, {stop.cities?.country}
         </h2>
         <button
           onClick={onDelete}
-          className="px-3 py-1 text-red-600 hover:text-red-700 dark:text-red-400"
+          className="px-3 py-1 text-red-600 hover:text-red-700"
         >
           Delete
         </button>
@@ -521,7 +521,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
       <div className="mb-4">
         <button
           onClick={handleAddDay}
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+          className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 text-sm"
         >
           + Add Day
         </button>
@@ -531,7 +531,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
         {days.map((day: any) => (
           <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
+              <h3 className="font-semibold text-gray-900">
                 Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
               </h3>
               <button
@@ -547,7 +547,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
             {day.itinerary_activities && day.itinerary_activities.length > 0 && (
               <div className="space-y-1">
                 {day.itinerary_activities.map((activity: any) => (
-                  <div key={activity.itinerary_activity_id} className="text-sm text-gray-600 dark:text-gray-400">
+                  <div key={activity.itinerary_activity_id} className="text-sm text-gray-600">
                     {activity.activities?.activity_name || activity.custom_activity_name}
                   </div>
                 ))}
@@ -599,12 +599,12 @@ function ActivitySearchModal({ cityId, onSelectActivity, onClose }: any) {
   }
 
   return (
-    <div className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+    <div className="mt-4 bg-gray-50 rounded-lg p-4">
       <h3 className="font-semibold mb-2">Add Activity</h3>
       <input
         type="text"
         placeholder="Or enter custom activity name"
-        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md mb-4 dark:bg-gray-800 dark:text-white"
+        className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
         value={customName}
         onChange={(e) => {
           setCustomName(e.target.value)
@@ -621,12 +621,12 @@ function ActivitySearchModal({ cityId, onSelectActivity, onClose }: any) {
             }}
             className={`p-2 border rounded cursor-pointer text-sm ${selectedActivity?.activity_id === activity.activity_id
               ? 'border-green-800 bg-green-50 dark:bg-blue-900/20'
-              : 'border-gray-300 dark:border-gray-600'
+              : 'border-gray-300'
               }`}
           >
             <div className="font-medium">{activity.activity_name}</div>
             {activity.estimated_cost && (
-              <div className="text-xs text-gray-600 dark:text-gray-400">
+              <div className="text-xs text-gray-600">
                 ${activity.estimated_cost}
               </div>
             )}
@@ -643,7 +643,7 @@ function ActivitySearchModal({ cityId, onSelectActivity, onClose }: any) {
         </button>
         <button
           onClick={onClose}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm"
+          className="px-4 py-2 border border-gray-300 rounded-md text-sm"
         >
           Cancel
         </button>

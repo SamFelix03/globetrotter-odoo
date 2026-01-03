@@ -54,13 +54,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
             <Link href="/login" className="font-medium text-green-800 hover:text-green-800">
               sign in to your existing account
@@ -69,14 +69,14 @@ export default function SignupPage() {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {success && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-900 dark:text-green-400 px-4 py-3 rounded">
               <p className="font-semibold">Account created successfully!</p>
               <p className="mt-2">We've sent a verification email to <strong>{email}</strong>. Please check your inbox and click the verification link to activate your account.</p>
               <p className="mt-2">Once verified, you can sign in.</p>
             </div>
           )}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}
@@ -150,7 +150,7 @@ export default function SignupPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Profile Photo (optional)
               </label>
               <div className="flex items-center gap-4">
@@ -158,7 +158,7 @@ export default function SignupPage() {
                   <img
                     src={profilePhotoUrl}
                     alt="Profile preview"
-                    className="w-16 h-16 object-cover rounded-full border-2 border-gray-300 dark:border-gray-700"
+                    className="w-16 h-16 object-cover rounded-full border-2 border-gray-300"
                   />
                 )}
                 <button
