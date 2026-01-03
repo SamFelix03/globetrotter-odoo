@@ -88,6 +88,16 @@ export default function Navbar() {
               >
                 My Trips
               </Link>
+              <Link
+                href="/community"
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  pathname.startsWith('/community')
+                    ? 'bg-green-800 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-800'
+                }`}
+              >
+                Community
+              </Link>
             </div>
           </div>
           
@@ -191,6 +201,17 @@ export default function Navbar() {
                 }`}
               >
                 My Trips
+              </Link>
+              <Link
+                href="/community"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  pathname.startsWith('/community')
+                    ? 'bg-green-800 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-800'
+                }`}
+              >
+                Community
               </Link>
             </div>
           </div>
