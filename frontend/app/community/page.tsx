@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
-import { ChevronDown, ChevronUp, MessageCircle, Calendar, MapPin, DollarSign } from 'lucide-react'
+import { ChevronDown, ChevronUp, MessageCircle, Calendar} from 'lucide-react'
 
 export default function CommunityPage() {
   const router = useRouter()
@@ -240,7 +240,6 @@ export default function CommunityPage() {
                       </span>
                       {comment.trip?.estimated_cost && (
                         <span className="flex items-center gap-1">
-                          <DollarSign className="w-4 h-4" />
                           ₹{comment.trip.estimated_cost.toFixed(2)}
                         </span>
                       )}

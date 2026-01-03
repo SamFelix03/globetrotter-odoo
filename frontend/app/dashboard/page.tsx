@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { MapPin, Calendar, DollarSign, Plus, ArrowRight, Globe } from 'lucide-react'
+import { MapPin, Calendar, Plus, ArrowRight, Globe } from 'lucide-react'
 import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 
 export default function DashboardPage() {
@@ -208,45 +208,43 @@ export default function DashboardPage() {
                 <div className="text-gray-600">Loading popular destinations...</div>
               </div>
             ) : popularPlaces.length > 0 ? (
-              <div className="overflow-x-auto pb-4 -mx-4 px-4">
-                <div className="flex gap-8 min-w-max sm:justify-start justify-center">
-                  {popularPlaces.map((place, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center group cursor-pointer flex-shrink-0"
-                      onClick={() => router.push(`/trips/ai-plan?destination=${encodeURIComponent(place.name)}&imageUrl=${encodeURIComponent(place.imageUrl || '')}`)}
-                    >
-                      <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden shadow-xl ring-4 ring-white hover:ring-green-200 transition-all hover:scale-105 mb-4">
-                        {place.imageUrl ? (
-                          <img
-                            src={place.imageUrl}
-                            alt={place.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement
-                              target.src = '/trip-default-img.png'
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                            <MapPin className="w-16 h-16 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-center max-w-[160px]">
-                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-green-800 transition-colors leading-tight mb-1.5">
-                          {place.name}
-                        </h3>
-                        {place.rating && (
-                          <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
-                            <span className="text-yellow-500 text-base">⭐</span>
-                            <span className="font-medium">{place.rating.toFixed(1)}</span>
-                          </div>
-                        )}
-                      </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+                {popularPlaces.map((place, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center group cursor-pointer"
+                    onClick={() => router.push(`/trips/ai-plan?destination=${encodeURIComponent(place.name)}&imageUrl=${encodeURIComponent(place.imageUrl || '')}`)}
+                  >
+                    <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden shadow-xl ring-4 ring-white hover:ring-green-200 transition-all hover:scale-105 mb-4">
+                      {place.imageUrl ? (
+                        <img
+                          src={place.imageUrl}
+                          alt={place.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = '/trip-default-img.png'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                          <MapPin className="w-16 h-16 text-white" />
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className="text-center max-w-[160px]">
+                      <h3 className="text-base font-semibold text-gray-900 group-hover:text-green-800 transition-colors leading-tight mb-1.5">
+                        {place.name}
+                      </h3>
+                      {place.rating && (
+                        <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                          <span className="text-yellow-500 text-base">⭐</span>
+                          <span className="font-medium">{place.rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
@@ -320,7 +318,6 @@ export default function DashboardPage() {
                       </div>
                       {trip.estimated_cost && (
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <DollarSign className="w-4 h-4 text-gray-400" />
                           <span className="font-semibold text-gray-900">₹{trip.estimated_cost.toFixed(2)}</span>
                         </div>
                       )}
