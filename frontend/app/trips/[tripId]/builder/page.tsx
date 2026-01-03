@@ -89,6 +89,15 @@ export default function ItineraryBuilderPage() {
 
           // Only save if category is selected (section is started)
           if (formData.selectedCategory) {
+            // Validate date range - if is_date_range is true, both start and end dates must be present
+            if (formData.is_date_range) {
+              if (!formData.startDate || !formData.endDate) {
+                alert(`Section with category "${formData.selectedCategory}" has date range selected but is missing start or end date. Please fill both dates.`)
+                setSaving(false)
+                return
+              }
+            }
+
             const section: any = {
               category: formData.selectedCategory,
               place: formData.place || null,
@@ -141,8 +150,9 @@ export default function ItineraryBuilderPage() {
 
       // Refresh saved sections
       await fetchSections()
-      alert('Sections saved successfully!')
-      setSaving(false)
+
+      // Redirect to trips page after successful save
+      window.location.href = '/trips'
     } catch (error: any) {
       console.error('Error saving sections:', error)
       alert(`Error saving sections: ${error.message}`)
@@ -194,10 +204,15 @@ export default function ItineraryBuilderPage() {
     }
   }
 
-  if (loading) {
+  if (loading || saving) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-lg text-gray-600">Loading...</div>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-800 mb-4"></div>
+          <div className="text-lg text-gray-600">
+            {saving ? 'Saving your trip...' : 'Loading...'}
+          </div>
+        </div>
       </div>
     )
   }

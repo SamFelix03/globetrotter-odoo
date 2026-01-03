@@ -9,12 +9,14 @@ export default function CalendarPage() {
   const params = useParams()
   const tripId = params.tripId as string
   const [trip, setTrip] = useState<any>(null)
+  const [sections, setSections] = useState<any[]>([])
   const [itinerary, setItinerary] = useState<any[]>([])
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchTrip()
+    fetchSections()
     fetchItinerary()
   }, [tripId])
 
@@ -33,6 +35,16 @@ export default function CalendarPage() {
     }
   }
 
+  const fetchSections = async () => {
+    try {
+      const res = await fetch(`/api/trips/${tripId}/sections`)
+      const data = await res.json()
+      setSections(data.sections || [])
+    } catch (error) {
+      console.error('Error fetching sections:', error)
+    }
+  }
+
   const fetchItinerary = async () => {
     try {
       const res = await fetch(`/api/trips/${tripId}/itinerary`)
@@ -47,6 +59,64 @@ export default function CalendarPage() {
     const dateStr = format(date, 'yyyy-MM-dd')
     const activities: any[] = []
 
+    // First, check new sections (trip_sections)
+    sections.forEach((section) => {
+      let matchesDate = false
+      
+      if (section.is_date_range) {
+        // Check if date falls within the date range
+        if (section.date_start && section.date_end) {
+          const startDate = new Date(section.date_start)
+          startDate.setHours(0, 0, 0, 0)
+          const endDate = new Date(section.date_end)
+          endDate.setHours(23, 59, 59, 999)
+          const checkDate = new Date(date)
+          checkDate.setHours(0, 0, 0, 0)
+          if (checkDate >= startDate && checkDate <= endDate) {
+            matchesDate = true
+          }
+        }
+      } else if (section.date_single) {
+        // Check if date matches single date
+        const singleDate = new Date(section.date_single)
+        singleDate.setHours(0, 0, 0, 0)
+        const checkDate = new Date(date)
+        checkDate.setHours(0, 0, 0, 0)
+        if (singleDate.getTime() === checkDate.getTime()) {
+          matchesDate = true
+        }
+      }
+
+      if (matchesDate) {
+        if (section.category === 'activity') {
+          activities.push({
+            id: section.section_id,
+            name: section.place || 'Activity',
+            category: section.category,
+            price: section.price,
+            type: 'section'
+          })
+        } else if (section.category === 'travel') {
+          activities.push({
+            id: section.section_id,
+            name: `${section.from_location || 'From'} → ${section.to_location || 'To'}`,
+            category: section.category,
+            transport_mode: section.transport_mode,
+            type: 'section'
+          })
+        } else if (section.category === 'stay') {
+          activities.push({
+            id: section.section_id,
+            name: section.place || 'Accommodation',
+            category: section.category,
+            price: section.price,
+            type: 'section'
+          })
+        }
+      }
+    })
+
+    // Also include legacy itinerary activities for backward compatibility
     itinerary.forEach((stop) => {
       stop.itinerary_days?.forEach((day: any) => {
         if (day.day_date === dateStr) {
@@ -54,6 +124,7 @@ export default function CalendarPage() {
             activities.push({
               ...activity,
               city: stop.cities?.city_name,
+              type: 'legacy'
             })
           })
         }
@@ -146,8 +217,8 @@ export default function CalendarPage() {
                   {activities.length > 0 && (
                     <div className="mt-1 space-y-1">
                       {activities.slice(0, 2).map((activity, idx) => (
-                        <div key={idx} className="text-xs bg-white p-1 rounded truncate">
-                          {activity.activities?.activity_name || activity.custom_activity_name}
+                        <div key={activity.id || idx} className="text-xs bg-white p-1 rounded truncate">
+                          {activity.name || activity.activities?.activity_name || activity.custom_activity_name}
                         </div>
                       ))}
                       {activities.length > 2 && (
@@ -174,15 +245,21 @@ export default function CalendarPage() {
                   {activities.length > 0 ? (
                     <div className="mt-2 space-y-2">
                       {activities.map((activity, idx) => (
-                        <div key={idx} className="text-sm text-gray-600">
+                        <div key={activity.id || idx} className="text-sm text-gray-600">
                           {activity.start_time && activity.end_time && (
                             <span className="font-medium">
                               {activity.start_time} - {activity.end_time}:{' '}
                             </span>
                           )}
-                          {activity.activities?.activity_name || activity.custom_activity_name}
+                          <span className="capitalize text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 mr-2">
+                            {activity.category || 'activity'}
+                          </span>
+                          {activity.name || activity.activities?.activity_name || activity.custom_activity_name}
                           {activity.city && (
                             <span className="ml-2 text-gray-500">({activity.city})</span>
+                          )}
+                          {activity.transport_mode && (
+                            <span className="ml-2 text-gray-500">via {activity.transport_mode}</span>
                           )}
                         </div>
                       ))}
