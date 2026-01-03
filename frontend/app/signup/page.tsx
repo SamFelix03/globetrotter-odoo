@@ -3,12 +3,16 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ImageUploadModal from '@/components/ImageUploadModal'
 
 export default function SignupPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [languagePreference, setLanguagePreference] = useState('en')
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState('')
+  const [showImageModal, setShowImageModal] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -23,7 +27,13 @@ export default function SignupPage() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, full_name: fullName }),
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          full_name: fullName,
+          language_preference: languagePreference,
+          profile_photo_url: profilePhotoUrl || null,
+        }),
       })
 
       const data = await res.json()
@@ -52,7 +62,7 @@ export default function SignupPage() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{' '}
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/login" className="font-medium text-green-800 hover:text-green-800">
               sign in to your existing account
             </Link>
           </p>
@@ -79,7 +89,7 @@ export default function SignupPage() {
                 id="full-name"
                 name="full-name"
                 type="text"
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
                 placeholder="Full Name (optional)"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -95,7 +105,7 @@ export default function SignupPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -111,11 +121,63 @@ export default function SignupPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+            <div>
+              <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
+                Preferred Language (optional)
+              </label>
+              <select
+                id="language"
+                name="language"
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
+                value={languagePreference}
+                onChange={(e) => setLanguagePreference(e.target.value)}
+              >
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="pt">Portuguese</option>
+                <option value="zh">Chinese</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Profile Photo (optional)
+              </label>
+              <div className="flex items-center gap-4">
+                {profilePhotoUrl && (
+                  <img
+                    src={profilePhotoUrl}
+                    alt="Profile preview"
+                    className="w-16 h-16 object-cover rounded-full border-2 border-gray-300 dark:border-gray-700"
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowImageModal(true)}
+                  className="px-4 py-2 text-sm font-medium text-green-800 border border-green-800 rounded-md hover:bg-green-50"
+                >
+                  {profilePhotoUrl ? 'Change Photo' : 'Upload Photo'}
+                </button>
+                {profilePhotoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setProfilePhotoUrl('')}
+                    className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -123,19 +185,31 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading || success}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-800 hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-800 disabled:opacity-50"
             >
               {loading ? 'Creating account...' : success ? 'Check your email' : 'Sign up'}
             </button>
           </div>
           {success && (
             <div className="text-center">
-              <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link href="/login" className="font-medium text-green-800 hover:text-green-900">
                 Go to login page →
               </Link>
             </div>
           )}
         </form>
+
+        <ImageUploadModal
+          isOpen={showImageModal}
+          onClose={() => setShowImageModal(false)}
+          onUploadSuccess={(url) => {
+            setProfilePhotoUrl(url)
+            setShowImageModal(false)
+          }}
+          folder="profiles"
+          currentImageUrl={profilePhotoUrl}
+          title="Upload Profile Photo"
+        />
       </div>
     </div>
   )

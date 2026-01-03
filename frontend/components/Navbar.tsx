@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
-import { User, LogOut, Settings } from 'lucide-react'
+import { User, LogOut, Settings, Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -52,66 +53,78 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link href="/dashboard" className="flex items-center px-2 py-2 text-xl font-bold text-blue-600 dark:text-blue-400">
+    <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4">
+      <div className="bg-white rounded-full shadow-lg border border-gray-200 px-4 py-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link 
+              href="/dashboard" 
+              className="flex items-center text-lg font-bold text-green-800 hover:text-green-900 transition-colors"
+            >
               🌍 GlobeTrotter
             </Link>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <div className="hidden md:flex items-center gap-1">
               <Link
                 href="/dashboard"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   pathname === '/dashboard'
-                    ? 'border-blue-500 text-gray-900 dark:text-gray-100'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
+                    ? 'bg-green-800 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-800'
                 }`}
               >
                 Dashboard
               </Link>
               <Link
                 href="/trips"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   pathname.startsWith('/trips')
-                    ? 'border-blue-500 text-gray-900 dark:text-gray-100'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300'
+                    ? 'bg-green-800 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-800'
                 }`}
               >
                 My Trips
               </Link>
             </div>
           </div>
-          <div className="flex items-center">
+          
+          <div className="flex items-center gap-3">
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-green-50 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {user.profile_photo_url ? (
+                    <img
+                      src={user.profile_photo_url}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover border-2 border-green-800"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-green-800 flex items-center justify-center">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
+                  )}
+                  <span className="hidden sm:block text-sm font-medium text-gray-700">
                     {user.full_name || user.email?.split('@')[0] || 'User'}
                   </span>
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl shadow-lg bg-white ring-1 ring-gray-200 z-50 overflow-hidden">
                     <div className="py-1">
-                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <div className="px-4 py-3 border-b border-gray-200">
+                        <p className="text-sm font-medium text-gray-900">
                           {user.full_name || 'User'}
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        <p className="text-sm text-gray-500 truncate">
                           {user.email}
                         </p>
                       </div>
                       <Link
                         href="/profile"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-800 transition-colors"
                       >
                         <Settings className="w-4 h-4 mr-3" />
                         Profile
@@ -121,7 +134,7 @@ export default function Navbar() {
                           setDropdownOpen(false)
                           handleLogout()
                         }}
-                        className="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
                         <LogOut className="w-4 h-4 mr-3" />
                         Sign Out
@@ -133,13 +146,51 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                className="px-4 py-2 text-sm font-medium text-white bg-green-800 hover:bg-green-900 rounded-full transition-colors"
               >
                 Login
               </Link>
             )}
+            
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-full hover:bg-green-50 text-gray-700"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+        
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 pt-4 border-t border-gray-200">
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  pathname === '/dashboard'
+                    ? 'bg-green-800 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-800'
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/trips"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  pathname.startsWith('/trips')
+                    ? 'bg-green-800 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-800'
+                }`}
+              >
+                My Trips
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )

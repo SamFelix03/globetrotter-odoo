@@ -63,10 +63,10 @@ export default function BudgetPage() {
   })) || []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href={`/trips/${tripId}`} className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
+          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900 dark:text-green-700">
             ← Back to Trip
           </Link>
         </div>
@@ -75,7 +75,7 @@ export default function BudgetPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Budget & Cost Breakdown</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+            <div className="bg-green-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <div className="text-sm text-gray-600 dark:text-gray-400">Total Budget</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
                 ${budget.total_budget?.toFixed(2) || '0.00'}

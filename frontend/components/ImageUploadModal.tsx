@@ -166,7 +166,7 @@ export default function ImageUploadModal({
               <img
                 src={stagedPreview}
                 alt="Staged preview"
-                className="w-full h-64 object-cover rounded-lg border-2 border-blue-500 dark:border-blue-400"
+                className="w-full h-64 object-cover rounded-lg border-2 border-green-800"
               />
             </div>
           )}
@@ -180,8 +180,8 @@ export default function ImageUploadModal({
               onDrop={handleDrop}
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                 dragActive
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                  ? 'border-green-800 bg-green-50'
+                  : 'border-gray-300 hover:border-gray-400'
               } ${uploading ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
               onClick={() => !uploading && fileInputRef.current?.click()}
             >
@@ -196,7 +196,7 @@ export default function ImageUploadModal({
 
               {uploading ? (
                 <div className="flex flex-col items-center">
-                  <Loader2 className="w-12 h-12 text-blue-600 dark:text-blue-400 animate-spin mb-4" />
+                  <Loader2 className="w-12 h-12 text-green-800 animate-spin mb-4" />
                   <p className="text-gray-600 dark:text-gray-400">Uploading...</p>
                 </div>
               ) : (
@@ -258,7 +258,7 @@ export default function ImageUploadModal({
           {stagedPreview && !uploading && (
             <button
               onClick={handleConfirmUpload}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-800 hover:bg-green-900 rounded-md flex items-center gap-2"
             >
               <Check className="w-4 h-4" />
               Confirm & Upload

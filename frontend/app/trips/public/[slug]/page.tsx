@@ -59,7 +59,7 @@ export default function PublicTripPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
           <div className="flex justify-between items-start mb-4">
@@ -75,7 +75,7 @@ export default function PublicTripPage() {
             </div>
             <button
               onClick={handleCopyTrip}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
             >
               Copy Trip
             </button>
@@ -107,7 +107,7 @@ export default function PublicTripPage() {
               {stop.itinerary_days && stop.itinerary_days.length > 0 && (
                 <div className="space-y-4">
                   {stop.itinerary_days.map((day: any) => (
-                    <div key={day.day_id} className="border-l-2 border-blue-500 pl-4">
+                    <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
                       <h3 className="font-semibold text-gray-900 dark:text-white">
                         Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
                       </h3>

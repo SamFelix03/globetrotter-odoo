@@ -3,11 +3,18 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import ConfirmModal from '@/components/ConfirmModal'
 
 export default function TripsPage() {
   const router = useRouter()
   const [trips, setTrips] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; tripId: number | null; tripName: string }>({
+    isOpen: false,
+    tripId: null,
+    tripName: '',
+  })
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetchTrips()
@@ -25,16 +32,28 @@ export default function TripsPage() {
     }
   }
 
-  const handleDelete = async (tripId: number) => {
-    if (!confirm('Are you sure you want to delete this trip?')) return
+  const handleDeleteClick = (tripId: number, tripName: string) => {
+    setDeleteModal({ isOpen: true, tripId, tripName })
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.tripId) return
+
+    setDeleting(true)
     try {
-      const res = await fetch(`/api/trips/${tripId}`, { method: 'DELETE' })
+      const res = await fetch(`/api/trips/${deleteModal.tripId}`, { method: 'DELETE' })
       if (res.ok) {
         fetchTrips()
+        setDeleteModal({ isOpen: false, tripId: null, tripName: '' })
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Failed to delete trip')
       }
     } catch (error) {
       console.error('Error deleting trip:', error)
+      alert('An error occurred while deleting the trip')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -47,26 +66,26 @@ export default function TripsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Trips</h1>
+          <h1 className="text-3xl font-bold text-gray-900">My Trips</h1>
           <Link
             href="/trips/create"
-            className="px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            className="px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-800 hover:bg-green-900"
           >
             + New Trip
           </Link>
         </div>
 
         {trips.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <div className="bg-white rounded-lg shadow p-12 text-center">
+            <p className="text-gray-500 mb-4">
               You haven't created any trips yet.
             </p>
             <Link
               href="/trips/create"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-800 hover:bg-green-900"
             >
               Plan Your First Trip
             </Link>
@@ -76,7 +95,7 @@ export default function TripsPage() {
             {trips.map((trip) => (
               <div
                 key={trip.trip_id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow"
+                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
               >
                 {trip.cover_photo_url && (
                   <img
@@ -86,37 +105,37 @@ export default function TripsPage() {
                   />
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {trip.trip_name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <p className="text-sm text-gray-600 mb-2">
                     {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}
                   </p>
                   {trip.trip_description && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
                       {trip.trip_description}
                     </p>
                   )}
                   {trip.estimated_cost && (
-                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-4">
+                    <p className="text-sm font-medium text-gray-900 mb-4">
                       Estimated: ${trip.estimated_cost.toFixed(2)}
                     </p>
                   )}
                   <div className="flex gap-2">
                     <Link
                       href={`/trips/${trip.trip_id}`}
-                      className="flex-1 text-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="flex-1 text-center px-4 py-2 text-sm font-medium text-green-800 hover:text-green-900"
                     >
                       View
                     </Link>
                     <Link
                       href={`/trips/${trip.trip_id}/builder`}
-                      className="flex-1 text-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="flex-1 text-center px-4 py-2 text-sm font-medium text-green-800 hover:text-green-900"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={() => handleDelete(trip.trip_id)}
+                      onClick={() => handleDeleteClick(trip.trip_id, trip.trip_name)}
                       className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                     >
                       Delete
@@ -128,6 +147,18 @@ export default function TripsPage() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, tripId: null, tripName: '' })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Trip"
+        message={`Are you sure you want to delete "${deleteModal.tripName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        loading={deleting}
+      />
     </div>
   )
 }

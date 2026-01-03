@@ -64,7 +64,7 @@ export default function VerifyEmailPage() {
             <div className="text-center">
               <Link
                 href="/login"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-800 hover:bg-green-900"
               >
                 Go to Login
               </Link>
@@ -79,7 +79,7 @@ export default function VerifyEmailPage() {
               <p className="text-sm">Didn't receive the email?</p>
               <Link
                 href="/login"
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="text-green-800 hover:text-green-800 font-medium"
               >
                 Go to Login
               </Link>

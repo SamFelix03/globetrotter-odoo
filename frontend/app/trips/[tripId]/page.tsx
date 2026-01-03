@@ -56,10 +56,10 @@ export default function TripViewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href="/trips" className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
+          <Link href="/trips" className="text-green-800 hover:text-green-900 dark:text-green-700">
             ← Back to Trips
           </Link>
         </div>
@@ -84,7 +84,7 @@ export default function TripViewPage() {
         <div className="flex gap-4 mb-8">
           <Link
             href={`/trips/${tripId}/builder`}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
           >
             Edit Itinerary
           </Link>
@@ -115,7 +115,7 @@ export default function TripViewPage() {
               {stop.itinerary_days && stop.itinerary_days.length > 0 && (
                 <div className="space-y-4">
                   {stop.itinerary_days.map((day: any) => (
-                    <div key={day.day_id} className="border-l-2 border-blue-500 pl-4">
+                    <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
                       <h3 className="font-semibold text-gray-900 dark:text-white">
                         Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
                       </h3>

@@ -88,10 +88,10 @@ export default function CalendarPage() {
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href={`/trips/${tripId}`} className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
+          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900 dark:text-green-700">
             ← Back to Trip
           </Link>
         </div>
@@ -136,11 +136,11 @@ export default function CalendarPage() {
                   key={day.toISOString()}
                   className={`min-h-24 p-2 border rounded ${
                     isTripDay
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
+                      ? 'bg-green-50 dark:bg-blue-900/20 border-green-300 dark:border-blue-700'
                       : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                   } ${!isCurrentMonth ? 'opacity-50' : ''}`}
                 >
-                  <div className={`text-sm font-medium ${isTripDay ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'}`}>
+                  <div className={`text-sm font-medium ${isTripDay ? 'text-green-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'}`}>
                     {format(day, 'd')}
                   </div>
                   {activities.length > 0 && (
@@ -167,7 +167,7 @@ export default function CalendarPage() {
             {tripDays.map((day) => {
               const activities = getActivitiesForDate(day)
               return (
-                <div key={day.toISOString()} className="border-l-2 border-blue-500 pl-4">
+                <div key={day.toISOString()} className="border-l-2 border-green-800 pl-4">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {format(day, 'EEEE, MMMM d, yyyy')}
                   </div>

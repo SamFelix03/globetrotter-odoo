@@ -74,7 +74,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Profile & Settings</h1>
 
@@ -84,7 +84,7 @@ export default function ProfilePage() {
             {!editing && (
               <button
                 onClick={() => setEditing(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
               >
                 Edit
               </button>
@@ -138,7 +138,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setShowImageModal(true)}
-                    className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    className="px-4 py-2 text-sm font-medium text-green-800 dark:text-green-700 border border-green-800 dark:border-blue-400 rounded-md hover:bg-green-50 dark:hover:bg-blue-900/20"
                   >
                     {formData.profile_photo_url ? 'Change Photo' : 'Upload Photo'}
                   </button>
@@ -171,7 +171,7 @@ export default function ProfilePage() {
               <div className="flex gap-2 justify-center">
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
                 >
                   Save
                 </button>

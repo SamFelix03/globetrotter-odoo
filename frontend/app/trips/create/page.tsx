@@ -51,7 +51,7 @@ export default function CreateTripPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Create New Trip</h1>
 
@@ -70,7 +70,7 @@ export default function CreateTripPage() {
               type="text"
               id="trip_name"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 dark:bg-gray-700 dark:text-white"
               value={formData.trip_name}
               onChange={(e) => setFormData({ ...formData, trip_name: e.target.value })}
             />
@@ -83,7 +83,7 @@ export default function CreateTripPage() {
             <textarea
               id="trip_description"
               rows={4}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 dark:bg-gray-700 dark:text-white"
               value={formData.trip_description}
               onChange={(e) => setFormData({ ...formData, trip_description: e.target.value })}
             />
@@ -116,7 +116,7 @@ export default function CreateTripPage() {
               <button
                 type="button"
                 onClick={() => setShowImageModal(true)}
-                className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                className="px-4 py-2 text-sm font-medium text-green-800 dark:text-green-700 border border-green-800 dark:border-blue-400 rounded-md hover:bg-green-50 dark:hover:bg-blue-900/20"
               >
                 {formData.cover_photo_url ? 'Change Photo' : 'Upload Photo'}
               </button>
@@ -140,7 +140,7 @@ export default function CreateTripPage() {
               type="number"
               id="total_budget"
               step="0.01"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-green-800 focus:border-green-800 dark:bg-gray-700 dark:text-white"
               value={formData.total_budget}
               onChange={(e) => setFormData({ ...formData, total_budget: e.target.value })}
             />
@@ -150,7 +150,7 @@ export default function CreateTripPage() {
             <input
               type="checkbox"
               id="is_public"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-green-800 focus:ring-green-800 border-gray-300 rounded"
               checked={formData.is_public}
               onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
             />
@@ -163,7 +163,7 @@ export default function CreateTripPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="flex-1 px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-green-800 hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-800 disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Create Trip'}
             </button>

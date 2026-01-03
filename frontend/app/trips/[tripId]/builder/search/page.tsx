@@ -136,12 +136,12 @@ export default function BuilderSearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link 
             href={`/trips/${tripId}/builder`} 
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            className="text-green-800 hover:text-green-900 dark:text-green-700"
           >
             ← Back to Builder
           </Link>
@@ -258,7 +258,7 @@ export default function BuilderSearchPage() {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSearching ? 'Searching...' : 'Search Transportation Options'}
               </button>
@@ -279,7 +279,7 @@ export default function BuilderSearchPage() {
                   {searchResults.transportation_options.map((option: any, index: number) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-600 transition-all cursor-pointer"
+                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-green-800 dark:hover:border-green-800 transition-all cursor-pointer"
                       onClick={() => handleSelectOption(option)}
                     >
                       <div className="flex justify-between items-start mb-2">
@@ -310,7 +310,7 @@ export default function BuilderSearchPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                          className="text-xs text-green-800 dark:text-green-700 hover:underline"
                         >
                           View source
                         </a>
@@ -368,7 +368,7 @@ export default function BuilderSearchPage() {
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSearching ? 'Searching...' : 'Search Activities'}
               </button>
@@ -389,7 +389,7 @@ export default function BuilderSearchPage() {
                   {searchResults.activities.map((activity: any, index: number) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-600 transition-all cursor-pointer"
+                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-green-800 dark:hover:border-green-800 transition-all cursor-pointer"
                       onClick={() => handleSelectOption(activity)}
                     >
                       <div className="flex justify-between items-start mb-2">
@@ -430,7 +430,7 @@ export default function BuilderSearchPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                          className="text-xs text-green-800 dark:text-green-700 hover:underline"
                         >
                           View source
                         </a>

@@ -54,7 +54,7 @@ export default function ActivitySearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Search Activities</h1>
 
@@ -82,7 +82,7 @@ export default function ActivitySearchPage() {
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
           >
             Search
           </button>
@@ -118,7 +118,7 @@ export default function ActivitySearchPage() {
                     href={activity.booking_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 text-sm"
+                    className="text-green-800 hover:text-green-900 dark:text-green-700 text-sm"
                   >
                     Book Now →
                   </a>

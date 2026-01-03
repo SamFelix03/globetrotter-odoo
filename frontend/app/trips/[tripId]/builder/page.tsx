@@ -110,10 +110,10 @@ export default function ItineraryBuilderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link href={`/trips/${tripId}`} className="text-blue-600 hover:text-blue-700 dark:text-blue-400">
+          <Link href={`/trips/${tripId}`} className="text-green-800 hover:text-green-900 dark:text-green-700">
             ← Back to Trip
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function ItineraryBuilderPage() {
               setSectionFormIds([...sectionFormIds, newId])
               setNextFormId(newId + 1)
             }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
           >
             + Add Section
           </button>
@@ -156,7 +156,7 @@ export default function ItineraryBuilderPage() {
                   setSectionFormIds(newIds)
                   setNextFormId(nextFormId + 1)
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
               >
                 + Add Section
               </button>
@@ -284,8 +284,8 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
               key={category.id}
               onClick={() => setSelectedCategory(category.id as 'travel' | 'activity' | 'stay')}
               className={`p-4 rounded-lg border-2 transition-all text-center ${selectedCategory === category.id
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-300 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                ? 'border-green-800 bg-green-50 dark:bg-blue-900/20'
+                : 'border-gray-300 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-800'
                 }`}
             >
               <div className="text-2xl mb-1">{category.icon}</div>
@@ -341,8 +341,8 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
                       type="button"
                       onClick={() => setSelectedTransportMode(mode)}
                       className={`px-4 py-2 rounded-md border-2 transition-all capitalize ${selectedTransportMode === mode
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                        : 'border-gray-300 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                        ? 'border-green-800 bg-green-50 dark:bg-blue-900/20 text-green-900 dark:text-blue-300'
+                        : 'border-gray-300 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-800'
                         }`}
                     >
                       {mode}
@@ -423,7 +423,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
         {selectedCategory && (
           <button
             onClick={handleSearch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
           >
             Search
           </button>
@@ -529,7 +529,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
 
       <div className="space-y-4">
         {days.map((day: any) => (
-          <div key={day.day_id} className="border-l-2 border-blue-500 pl-4">
+          <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold text-gray-900 dark:text-white">
                 Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
@@ -539,7 +539,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
                   setSelectedDay(day)
                   setShowActivitySearch(true)
                 }}
-                className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                className="px-3 py-1 bg-green-800 text-white rounded-md hover:bg-green-900 text-sm"
               >
                 + Add Activity
               </button>
@@ -620,7 +620,7 @@ function ActivitySearchModal({ cityId, onSelectActivity, onClose }: any) {
               setCustomName('')
             }}
             className={`p-2 border rounded cursor-pointer text-sm ${selectedActivity?.activity_id === activity.activity_id
-              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+              ? 'border-green-800 bg-green-50 dark:bg-blue-900/20'
               : 'border-gray-300 dark:border-gray-600'
               }`}
           >
@@ -637,7 +637,7 @@ function ActivitySearchModal({ cityId, onSelectActivity, onClose }: any) {
         <button
           onClick={handleSelect}
           disabled={!selectedActivity && !customName}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm"
+          className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900 disabled:opacity-50 text-sm"
         >
           Add
         </button>
