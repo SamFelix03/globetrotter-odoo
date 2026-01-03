@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
         .insert({
           email,
           full_name: full_name || null,
-          // Note: We don't store password_hash anymore since Supabase Auth handles it
         })
 
       if (dbError) {

@@ -67,10 +67,11 @@ export default function ResetPasswordPage() {
       setSuccess(true)
       setLoading(false)
       
-      // Redirect to login after 2 seconds
+      // Redirect to login immediately (user is already logged out by the API)
       setTimeout(() => {
         router.push('/login?reset=success')
-      }, 2000)
+        router.refresh() // Refresh to clear any cached session
+      }, 1500)
     } catch (err: any) {
       setError(err.message || 'An error occurred')
       setLoading(false)

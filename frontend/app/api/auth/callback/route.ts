@@ -39,17 +39,17 @@ export async function GET(request: NextRequest) {
     }
 
     if (data?.user) {
-      // Check if this is an email verification
-      if (data.user.email_confirmed_at || type === 'signup') {
-        // Redirect to verify-email page to show success message
-        return NextResponse.redirect(new URL('/verify-email?verified=true', requestUrl.origin))
-      }
-      
-      // For password reset or other flows
+      // For password reset - prioritize this check first
       if (type === 'recovery') {
         const resetUrl = new URL('/reset-password', requestUrl.origin)
         resetUrl.searchParams.set('from_callback', 'true')
         return NextResponse.redirect(resetUrl)
+      }
+      
+      // Check if this is an email verification (signup)
+      if (type === 'signup' || (!type && data.user.email_confirmed_at)) {
+        // Redirect to verify-email page to show success message
+        return NextResponse.redirect(new URL('/verify-email?verified=true', requestUrl.origin))
       }
       
       return NextResponse.redirect(new URL(next, requestUrl.origin))

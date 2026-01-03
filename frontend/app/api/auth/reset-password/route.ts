@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,22 +13,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          },
+        },
+      }
+    )
 
     // Update password using Supabase Auth
-    const { error } = await supabase.auth.updateUser({
+    const { error: updateError } = await supabase.auth.updateUser({
       password: password,
     })
 
-    if (error) {
+    if (updateError) {
       return NextResponse.json(
-        { error: error.message },
+        { error: updateError.message },
         { status: 500 }
       )
     }
 
+    // After password update, sign out the user so they can log in with new password
+    await supabase.auth.signOut()
+
     return NextResponse.json(
-      { message: 'Password updated successfully' },
+      { message: 'Password updated successfully. Please log in with your new password.' },
       { status: 200 }
     )
   } catch (error: any) {
