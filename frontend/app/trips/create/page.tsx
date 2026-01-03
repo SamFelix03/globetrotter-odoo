@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import ImageUploadModal from '@/components/ImageUploadModal'
 
 export default function CreateTripPage() {
   const router = useRouter()
@@ -16,6 +17,7 @@ export default function CreateTripPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,16 +119,36 @@ export default function CreateTripPage() {
           </div>
 
           <div>
-            <label htmlFor="cover_photo_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Cover Photo URL
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Cover Photo
             </label>
-            <input
-              type="url"
-              id="cover_photo_url"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-              value={formData.cover_photo_url}
-              onChange={(e) => setFormData({ ...formData, cover_photo_url: e.target.value })}
-            />
+            {formData.cover_photo_url && (
+              <div className="mb-3">
+                <img
+                  src={formData.cover_photo_url}
+                  alt="Cover preview"
+                  className="w-full h-48 object-cover rounded-lg border border-gray-300 dark:border-gray-700"
+                />
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowImageModal(true)}
+                className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              >
+                {formData.cover_photo_url ? 'Change Photo' : 'Upload Photo'}
+              </button>
+              {formData.cover_photo_url && (
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, cover_photo_url: '' })}
+                  className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
           </div>
 
           <div>
@@ -174,6 +196,18 @@ export default function CreateTripPage() {
           </div>
         </form>
       </div>
+
+      <ImageUploadModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        onUploadSuccess={(url) => {
+          setFormData({ ...formData, cover_photo_url: url })
+          setShowImageModal(false)
+        }}
+        folder="trips"
+        currentImageUrl={formData.cover_photo_url}
+        title="Upload Trip Cover Photo"
+      />
     </div>
   )
 }

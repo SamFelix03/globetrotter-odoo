@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import ImageUploadModal from '@/components/ImageUploadModal'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null)
   const [savedDestinations, setSavedDestinations] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
   const [formData, setFormData] = useState({
     full_name: '',
     profile_photo_url: '',
@@ -74,7 +76,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Profile & Settings</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Profile & Settings</h1>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
           <div className="flex justify-between items-center mb-6">
@@ -89,6 +91,23 @@ export default function ProfilePage() {
             )}
           </div>
 
+          {/* Profile Photo Display (when not editing) */}
+          {!editing && (
+            <div className="flex justify-center mb-6">
+              {user?.profile_photo_url ? (
+                <img
+                  src={user.profile_photo_url}
+                  alt="Profile"
+                  className="w-32 h-32 object-cover rounded-full border-2 border-gray-300 dark:border-gray-700"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-gray-500 dark:text-gray-400 text-4xl">👤</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {editing ? (
             <div className="space-y-4">
               <div>
@@ -102,16 +121,37 @@ export default function ProfilePage() {
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Profile Photo URL
+              <div className="flex flex-col items-center">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 text-center">
+                  Profile Photo
                 </label>
-                <input
-                  type="url"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                  value={formData.profile_photo_url}
-                  onChange={(e) => setFormData({ ...formData, profile_photo_url: e.target.value })}
-                />
+                {formData.profile_photo_url && (
+                  <div className="mb-4">
+                    <img
+                      src={formData.profile_photo_url}
+                      alt="Profile preview"
+                      className="w-32 h-32 object-cover rounded-full border-2 border-gray-300 dark:border-gray-700 mx-auto"
+                    />
+                  </div>
+                )}
+                <div className="flex gap-2 justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowImageModal(true)}
+                    className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  >
+                    {formData.profile_photo_url ? 'Change Photo' : 'Upload Photo'}
+                  </button>
+                  {formData.profile_photo_url && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, profile_photo_url: '' })}
+                      className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -128,7 +168,7 @@ export default function ProfilePage() {
                   <option value="de">German</option>
                 </select>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-center">
                 <button
                   onClick={handleSave}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -147,18 +187,18 @@ export default function ProfilePage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                <div className="mt-1 text-gray-900 dark:text-white">{user?.email}</div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-2">Email</label>
+                <div className="mt-1 text-gray-900 dark:text-white text-center">{user?.email}</div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
-                <div className="mt-1 text-gray-900 dark:text-white">{user?.full_name || 'Not set'}</div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-2">Full Name</label>
+                <div className="mt-1 text-gray-900 dark:text-white text-center">{user?.full_name || 'Not set'}</div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Language</label>
-                <div className="mt-1 text-gray-900 dark:text-white">{user?.language_preference || 'en'}</div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 text-center mb-2">Language</label>
+                <div className="mt-1 text-gray-900 dark:text-white text-center">{user?.language_preference || 'en'}</div>
               </div>
             </div>
           )}
@@ -185,6 +225,18 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      <ImageUploadModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        onUploadSuccess={(url) => {
+          setFormData({ ...formData, profile_photo_url: url })
+          setShowImageModal(false)
+        }}
+        folder="profiles"
+        currentImageUrl={formData.profile_photo_url}
+        title="Upload Profile Photo"
+      />
     </div>
   )
 }
