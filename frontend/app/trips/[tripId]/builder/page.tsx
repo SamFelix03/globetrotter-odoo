@@ -190,6 +190,10 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [isLoaded, setIsLoaded] = useState(false)
+  // Travel-specific fields
+  const [fromLocation, setFromLocation] = useState('')
+  const [toLocation, setToLocation] = useState('')
+  const [selectedTransportMode, setSelectedTransportMode] = useState<string>('')
 
   // Load cached data on mount (client-side only)
   useEffect(() => {
@@ -206,6 +210,9 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
         setIsDateRange(data.isDateRange || false)
         setStartDate(data.startDate || '')
         setEndDate(data.endDate || '')
+        setFromLocation(data.fromLocation || '')
+        setToLocation(data.toLocation || '')
+        setSelectedTransportMode(data.selectedTransportMode || '')
       }
       setIsLoaded(true)
     } catch (error) {
@@ -226,13 +233,16 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
       isDateRange,
       startDate,
       endDate,
+      fromLocation,
+      toLocation,
+      selectedTransportMode,
     }
     try {
       localStorage.setItem(cacheKey, JSON.stringify(formData))
     } catch (error) {
       console.error('Error saving form data to cache:', error)
     }
-  }, [selectedCategory, place, price, dateRange, isDateRange, startDate, endDate, cacheKey, isLoaded])
+  }, [selectedCategory, place, price, dateRange, isDateRange, startDate, endDate, fromLocation, toLocation, selectedTransportMode, cacheKey, isLoaded])
 
   const categories = [
     { id: 'travel', name: 'Travel', icon: '✈️' },
@@ -251,6 +261,9 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
       place,
       price: price || '',
       dateRange: isDateRange ? `${startDate}|${endDate}` : dateRange || '',
+      from: fromLocation || '',
+      to: toLocation || '',
+      transportMode: selectedTransportMode || '',
     })
     router.push(`/trips/${tripId}/builder/search?${params.toString()}`)
   }
@@ -286,18 +299,74 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
       {/* Form Fields - Only show after category is selected */}
       {selectedCategory && (
         <div className="space-y-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Place
-            </label>
-            <input
-              type="text"
-              placeholder="Enter place name"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
-            />
-          </div>
+          {/* Travel-specific fields */}
+          {selectedCategory === 'travel' && (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    From
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter origin location"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={fromLocation}
+                    onChange={(e) => setFromLocation(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    To
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter destination location"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={toLocation}
+                    onChange={(e) => setToLocation(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Transportation Mode
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['flight', 'train', 'bus', 'car'].map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setSelectedTransportMode(mode)}
+                      className={`px-4 py-2 rounded-md border-2 transition-all capitalize ${selectedTransportMode === mode
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                        : 'border-gray-300 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                        }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Common fields - show Place for non-travel, or show it for travel too */}
+          {selectedCategory !== 'travel' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Place
+              </label>
+              <input
+                type="text"
+                placeholder="Enter place name"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                value={place}
+                onChange={(e) => setPlace(e.target.value)}
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -369,7 +438,8 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
         {selectedCategory && (
           <button
             onClick={handleSearch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            disabled={selectedCategory !== 'travel' && !place}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Search
           </button>

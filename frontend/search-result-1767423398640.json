@@ -1,0 +1,42 @@
+{
+  "from": "New York",
+  "to": "Los Angeles",
+  "transportation_options": [
+    {
+      "mode": "flight",
+      "price": "$60",
+      "price_numeric": 60,
+      "currency": "USD",
+      "source_url": "https://www.expedia.com/lp/flights/nyc/lax/new-york-to-los-angeles",
+      "duration": "6 hours",
+      "provider": "Various airlines via Expedia"
+    },
+    {
+      "mode": "train",
+      "price": "$363",
+      "price_numeric": 363,
+      "currency": "USD",
+      "source_url": "https://www.rome2rio.com/Train/New-York-Penn-Station/Los-Angeles",
+      "duration": "2 days 19 hours",
+      "provider": "Amtrak"
+    },
+    {
+      "mode": "bus",
+      "price": "$193.98",
+      "price_numeric": 193.98,
+      "currency": "USD",
+      "source_url": "https://www.greyhound.com/bus-routes/new-york-ny-los-angeles-ca",
+      "duration": "approximately 60 hours",
+      "provider": "Greyhound"
+    },
+    {
+      "mode": "car rental",
+      "price": "$652",
+      "price_numeric": 652,
+      "currency": "USD",
+      "source_url": "https://www.qeeq.com/one-way-rentals/new-york-102297-to-los-angeles-3359",
+      "duration": "41-45 hours driving (without stops)",
+      "provider": "QEEQ (various rental companies)"
+    }
+  ]
+}

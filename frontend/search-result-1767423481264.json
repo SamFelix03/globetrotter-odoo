@@ -1,0 +1,33 @@
+{
+  "from": "New York",
+  "to": "Los Angeles",
+  "transportation_options": [
+    {
+      "mode": "flight",
+      "price": "$300",
+      "price_numeric": 300,
+      "currency": "USD",
+      "source_url": "https://www.dva.wa.gov/sites/default/files/2025-11/BookFlight43.pdf",
+      "duration": "6 hours 15 minutes",
+      "provider": "Various Airlines"
+    },
+    {
+      "mode": "bus",
+      "price": "$193.98",
+      "price_numeric": 193.98,
+      "currency": "USD",
+      "source_url": "https://www.greyhound.com/bus-routes/new-york-ny-los-angeles-ca",
+      "duration": "60 hours",
+      "provider": "Greyhound"
+    },
+    {
+      "mode": "car rental",
+      "price": "$1,000",
+      "price_numeric": 1000,
+      "currency": "USD",
+      "source_url": "https://www.sherpaautotransport.com/routes/new-york-city-ny-to-los-angeles-ca/",
+      "duration": "Approximately 6 days",
+      "provider": "Various Rental Companies"
+    }
+  ]
+}
