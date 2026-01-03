@@ -15,12 +15,21 @@ export default function ResetPasswordPage() {
   const [hasAccessToken, setHasAccessToken] = useState(false)
 
   useEffect(() => {
-    // Check if we have an access token from the reset link
+    // Check if we have an access token or code from the reset link
     const accessToken = searchParams.get('access_token')
-    if (accessToken) {
+    const code = searchParams.get('code')
+    
+    // If we have either, we can proceed
+    if (accessToken || code) {
       setHasAccessToken(true)
     } else {
-      setError('Invalid or expired reset link. Please request a new password reset.')
+      // Check if we came from callback (which means we're authenticated)
+      const fromCallback = searchParams.get('from_callback')
+      if (fromCallback === 'true') {
+        setHasAccessToken(true)
+      } else {
+        setError('Invalid or expired reset link. Please request a new password reset.')
+      }
     }
   }, [searchParams])
 

@@ -23,6 +23,10 @@ export default function LoginPage() {
     if (reset === 'success') {
       setMessage('Password reset successful! You can now sign in with your new password.')
     }
+    const error = searchParams.get('error')
+    if (error === 'verification_link_invalid') {
+      setError('The verification link is invalid or has expired. Please request a new verification email or try signing up again.')
+    }
   }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {

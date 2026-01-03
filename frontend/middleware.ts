@@ -35,9 +35,19 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+  // Skip middleware for API routes - they handle their own authentication
+  if (pathname.startsWith('/api/')) {
+    return response
+  }
+
   // Public routes that don't require authentication
   const publicRoutes = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-email']
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
+  
+  // Allow callback route to work without authentication (it handles its own auth)
+  if (pathname.startsWith('/api/auth/callback')) {
+    return response
+  }
 
   // If user is not authenticated and trying to access a protected route
   if (!user && !isPublicRoute) {
@@ -59,12 +69,13 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes - handled separately)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
 
