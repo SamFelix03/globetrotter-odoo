@@ -78,13 +78,13 @@ export default function BudgetPage() {
             <div className="bg-green-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <div className="text-sm text-gray-600">Total Budget</div>
               <div className="text-2xl font-bold text-gray-900">
-                ${budget.total_budget?.toFixed(2) || '0.00'}
+                ₹{budget.total_budget?.toFixed(2) || '0.00'}
               </div>
             </div>
             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
               <div className="text-sm text-gray-600">Estimated Cost</div>
               <div className="text-2xl font-bold text-gray-900">
-                ${budget.estimated_cost?.toFixed(2) || '0.00'}
+                ₹{budget.estimated_cost?.toFixed(2) || '0.00'}
               </div>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
@@ -94,7 +94,7 @@ export default function BudgetPage() {
             <div className="bg-orange-50 p-4 rounded-lg">
               <div className="text-sm text-gray-600">Avg/Day</div>
               <div className="text-2xl font-bold text-gray-900">
-                ${budget.avg_cost_per_day?.toFixed(2) || '0.00'}
+                ₹{budget.avg_cost_per_day?.toFixed(2) || '0.00'}
               </div>
             </div>
           </div>

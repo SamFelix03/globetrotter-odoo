@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import ConfirmModal from '@/components/ConfirmModal'
-import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -13,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Plus, Calendar, DollarSign, Eye, Edit, Trash2 } from 'lucide-react'
+import { Plus, Calendar, Eye, Edit, Trash2 } from 'lucide-react'
 
 export default function TripsPage() {
   const router = useRouter()
@@ -144,8 +143,7 @@ export default function TripsPage() {
                     </div>
                     {trip.estimated_cost && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <DollarSign className="w-4 h-4" />
-                        <span className="font-medium">${trip.estimated_cost.toFixed(2)}</span>
+                        <span className="font-medium">₹{trip.estimated_cost.toFixed(2)}</span>
                       </div>
                     )}
                   </div>
