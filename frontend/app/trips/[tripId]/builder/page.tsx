@@ -11,7 +11,50 @@ export default function ItineraryBuilderPage() {
   const [trip, setTrip] = useState<any>(null)
   const [stops, setStops] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [showCitySearch, setShowCitySearch] = useState(false)
+
+  // Initialize form IDs from cache synchronously if available
+  const getInitialFormIds = () => {
+    if (typeof window === 'undefined') return []
+    try {
+      const cachedIds = localStorage.getItem(`sectionFormIds_${tripId}`)
+      if (cachedIds) {
+        const ids = JSON.parse(cachedIds)
+        if (Array.isArray(ids) && ids.length > 0) {
+          return ids
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cached form IDs:', error)
+    }
+    return []
+  }
+
+  const getInitialNextFormId = () => {
+    if (typeof window === 'undefined') return 1
+    try {
+      const cachedNextId = localStorage.getItem(`nextFormId_${tripId}`)
+      if (cachedNextId) {
+        const nextId = parseInt(cachedNextId, 10)
+        if (!isNaN(nextId)) {
+          return nextId
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cached next form ID:', error)
+    }
+    return 1
+  }
+
+  const [sectionFormIds, setSectionFormIds] = useState<number[]>(getInitialFormIds)
+  const [nextFormId, setNextFormId] = useState(getInitialNextFormId)
+
+  // Save form IDs to cache whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`sectionFormIds_${tripId}`, JSON.stringify(sectionFormIds))
+      localStorage.setItem(`nextFormId_${tripId}`, nextFormId.toString())
+    }
+  }, [sectionFormIds, nextFormId, tripId])
 
   useEffect(() => {
     fetchTrip()
@@ -40,26 +83,6 @@ export default function ItineraryBuilderPage() {
     }
   }
 
-  const handleAddStop = async (cityId: number, arrivalDate: string, departureDate: string) => {
-    try {
-      const res = await fetch(`/api/trips/${tripId}/stops`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          city_id: cityId,
-          arrival_date: arrivalDate,
-          departure_date: departureDate,
-        }),
-      })
-
-      if (res.ok) {
-        fetchStops()
-        setShowCitySearch(false)
-      }
-    } catch (error) {
-      console.error('Error adding stop:', error)
-    }
-  }
 
   const handleDeleteStop = async (stopId: number) => {
     if (!confirm('Are you sure you want to delete this stop?')) return
@@ -99,23 +122,46 @@ export default function ItineraryBuilderPage() {
             Itinerary Builder: {trip?.trip_name}
           </h1>
           <button
-            onClick={() => setShowCitySearch(!showCitySearch)}
+            onClick={() => {
+              const newId = nextFormId
+              setSectionFormIds([...sectionFormIds, newId])
+              setNextFormId(newId + 1)
+            }}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            + Add Stop
+            + Add Section
           </button>
         </div>
 
-        {showCitySearch && (
-          <div className="mb-8">
-            <CitySearchModal
-              onSelectCity={(cityId, arrivalDate, departureDate) =>
-                handleAddStop(cityId, arrivalDate, departureDate)
-              }
-              onClose={() => setShowCitySearch(false)}
+        {sectionFormIds.map((formId, index) => (
+          <div key={formId} className="mb-8">
+            <SectionForm
+              formId={formId}
+              tripId={tripId}
+              onClose={() => {
+                // Clear cache when closing
+                const cacheKey = `sectionForm_${tripId}_${formId}`
+                localStorage.removeItem(cacheKey)
+                const newIds = sectionFormIds.filter(id => id !== formId)
+                setSectionFormIds(newIds)
+              }}
             />
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => {
+                  const insertIndex = sectionFormIds.indexOf(formId) + 1
+                  const newIds = [...sectionFormIds]
+                  newIds.splice(insertIndex, 0, nextFormId)
+                  setSectionFormIds(newIds)
+                  setNextFormId(nextFormId + 1)
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                + Add Section
+              </button>
+            </div>
           </div>
-        )}
+        ))}
 
         <div className="space-y-6">
           {stops.map((stop, index) => (
@@ -132,91 +178,202 @@ export default function ItineraryBuilderPage() {
   )
 }
 
-function CitySearchModal({ onSelectCity, onClose }: any) {
-  const [search, setSearch] = useState('')
-  const [cities, setCities] = useState<any[]>([])
-  const [arrivalDate, setArrivalDate] = useState('')
-  const [departureDate, setDepartureDate] = useState('')
-  const [selectedCity, setSelectedCity] = useState<any>(null)
+function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: string; onClose: () => void }) {
+  const router = useRouter()
+  const cacheKey = `sectionForm_${tripId}_${formId}`
 
+  const [selectedCategory, setSelectedCategory] = useState<'travel' | 'activity' | 'stay' | null>(null)
+  const [place, setPlace] = useState('')
+  const [price, setPrice] = useState('')
+  const [dateRange, setDateRange] = useState('')
+  const [isDateRange, setIsDateRange] = useState(false)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load cached data on mount (client-side only)
   useEffect(() => {
-    if (search) {
-      fetchCities()
-    }
-  }, [search])
+    if (typeof window === 'undefined' || isLoaded) return
 
-  const fetchCities = async () => {
     try {
-      const res = await fetch(`/api/cities?search=${encodeURIComponent(search)}&limit=10`)
-      const data = await res.json()
-      setCities(data.cities || [])
+      const cached = localStorage.getItem(cacheKey)
+      if (cached) {
+        const data = JSON.parse(cached)
+        setSelectedCategory(data.selectedCategory || null)
+        setPlace(data.place || '')
+        setPrice(data.price || '')
+        setDateRange(data.dateRange || '')
+        setIsDateRange(data.isDateRange || false)
+        setStartDate(data.startDate || '')
+        setEndDate(data.endDate || '')
+      }
+      setIsLoaded(true)
     } catch (error) {
-      console.error('Error fetching cities:', error)
+      console.error('Error loading cached form data:', error)
+      setIsLoaded(true)
     }
-  }
+  }, [cacheKey, isLoaded])
 
-  const handleSelect = () => {
-    if (selectedCity && arrivalDate && departureDate) {
-      onSelectCity(selectedCity.city_id, arrivalDate, departureDate)
+  // Save to cache whenever form data changes (but only after initial load)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isLoaded) return
+
+    const formData = {
+      selectedCategory,
+      place,
+      price,
+      dateRange,
+      isDateRange,
+      startDate,
+      endDate,
     }
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(formData))
+    } catch (error) {
+      console.error('Error saving form data to cache:', error)
+    }
+  }, [selectedCategory, place, price, dateRange, isDateRange, startDate, endDate, cacheKey, isLoaded])
+
+  const categories = [
+    { id: 'travel', name: 'Travel', icon: '✈️' },
+    { id: 'activity', name: 'Activity', icon: '🎯' },
+    { id: 'stay', name: 'Stay', icon: '🏨' },
+  ]
+
+  const handleSearch = () => {
+    if (!selectedCategory) return
+
+    // Navigate to search page with query parameters
+    const params = new URLSearchParams({
+      tripId,
+      formId: formId.toString(),
+      category: selectedCategory,
+      place,
+      price: price || '',
+      dateRange: isDateRange ? `${startDate}|${endDate}` : dateRange || '',
+    })
+    router.push(`/trips/${tripId}/builder/search?${params.toString()}`)
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Search and Add City</h2>
-      <input
-        type="text"
-        placeholder="Search cities..."
-        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md mb-4 dark:bg-gray-700 dark:text-white"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <input
-          type="date"
-          placeholder="Arrival Date"
-          className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-          value={arrivalDate}
-          onChange={(e) => setArrivalDate(e.target.value)}
-        />
-        <input
-          type="date"
-          placeholder="Departure Date"
-          className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-          value={departureDate}
-          onChange={(e) => setDepartureDate(e.target.value)}
-        />
-      </div>
-      <div className="space-y-2 max-h-60 overflow-y-auto mb-4">
-        {cities.map((city) => (
-          <div
-            key={city.city_id}
-            onClick={() => setSelectedCity(city)}
-            className={`p-3 border rounded cursor-pointer ${
-              selectedCity?.city_id === city.city_id
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Add Section</h2>
+
+      {/* Category Selection */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Select Category
+        </label>
+        <div className="grid grid-cols-3 gap-3">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id as 'travel' | 'activity' | 'stay')}
+              className={`p-4 rounded-lg border-2 transition-all text-center ${selectedCategory === category.id
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-300 dark:border-gray-700'
-            }`}
-          >
-            <div className="font-semibold">{city.city_name}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">{city.country}</div>
-          </div>
-        ))}
+                : 'border-gray-300 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                }`}
+            >
+              <div className="text-2xl mb-1">{category.icon}</div>
+              <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                {category.name}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="flex gap-2">
-        <button
-          onClick={handleSelect}
-          disabled={!selectedCity || !arrivalDate || !departureDate}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
-          Add Stop
-        </button>
+
+      {/* Form Fields - Only show after category is selected */}
+      {selectedCategory && (
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Place
+            </label>
+            <input
+              type="text"
+              placeholder="Enter place name"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Price
+            </label>
+            <input
+              type="number"
+              placeholder="Enter price"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Date / Date Range
+            </label>
+            <div className="mb-2">
+              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input
+                  type="checkbox"
+                  checked={isDateRange}
+                  onChange={(e) => setIsDateRange(e.target.checked)}
+                  className="rounded"
+                />
+                Use date range
+              </label>
+            </div>
+            {isDateRange ? (
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="date"
+                  placeholder="Start Date"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <input
+                  type="date"
+                  placeholder="End Date"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+            ) : (
+              <input
+                type="date"
+                placeholder="Select date"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-end gap-2">
         <button
           onClick={onClose}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
+          className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
         >
           Cancel
         </button>
+        {selectedCategory && (
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Search
+          </button>
+        )}
       </div>
     </div>
   )
@@ -349,7 +506,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
       {showActivitySearch && (
         <ActivitySearchModal
           cityId={stop.city_id}
-          onSelectActivity={(activityId, customName) => handleAddActivity(activityId, customName)}
+          onSelectActivity={(activityId: number | null, customName: string | null) => handleAddActivity(activityId, customName)}
           onClose={() => {
             setShowActivitySearch(false)
             setSelectedDay(null)
@@ -408,11 +565,10 @@ function ActivitySearchModal({ cityId, onSelectActivity, onClose }: any) {
               setSelectedActivity(activity)
               setCustomName('')
             }}
-            className={`p-2 border rounded cursor-pointer text-sm ${
-              selectedActivity?.activity_id === activity.activity_id
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-300 dark:border-gray-600'
-            }`}
+            className={`p-2 border rounded cursor-pointer text-sm ${selectedActivity?.activity_id === activity.activity_id
+              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+              : 'border-gray-300 dark:border-gray-600'
+              }`}
           >
             <div className="font-medium">{activity.activity_name}</div>
             {activity.estimated_cost && (
