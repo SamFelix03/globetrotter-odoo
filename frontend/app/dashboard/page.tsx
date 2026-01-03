@@ -52,9 +52,9 @@ export default function DashboardPage() {
             backgroundImage: 'url(/hero-banner.png)',
           }}
         >
-          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white drop-shadow-lg">
               Plan your next adventure with ease.
@@ -109,19 +109,17 @@ export default function DashboardPage() {
                   href={`/trips/${trip.trip_id}`}
                   className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all hover:border-green-300 group"
                 >
-                  {trip.cover_photo_url ? (
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={trip.cover_photo_url}
-                        alt={trip.trip_name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
-                      <Globe className="w-16 h-16 text-green-800" />
-                    </div>
-                  )}
+                  <div className="h-48 overflow-hidden">
+                    <img
+                      src={trip.cover_photo_url || '/trip-default-img.png'}
+                      alt={trip.trip_name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = '/trip-default-img.png'
+                      }}
+                    />
+                  </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-green-800 transition-colors">
                       {trip.trip_name}

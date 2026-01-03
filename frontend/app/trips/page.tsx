@@ -97,13 +97,15 @@ export default function TripsPage() {
                 key={trip.trip_id}
                 className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
               >
-                {trip.cover_photo_url && (
-                  <img
-                    src={trip.cover_photo_url}
-                    alt={trip.trip_name}
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
-                )}
+                <img
+                  src={trip.cover_photo_url || '/trip-default-img.png'}
+                  alt={trip.trip_name}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.src = '/trip-default-img.png'
+                  }}
+                />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {trip.trip_name}
