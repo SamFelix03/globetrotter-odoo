@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import DateRangePicker from '@/components/DateRangePicker'
 
 export default function ItineraryBuilderPage() {
   const params = useParams()
@@ -314,48 +315,16 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Date / Date Range
-            </label>
-            <div className="mb-2">
-              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <input
-                  type="checkbox"
-                  checked={isDateRange}
-                  onChange={(e) => setIsDateRange(e.target.checked)}
-                  className="rounded"
-                />
-                Use date range
-              </label>
-            </div>
-            {isDateRange ? (
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="date"
-                  placeholder="Start Date"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-                <input
-                  type="date"
-                  placeholder="End Date"
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-            ) : (
-              <input
-                type="date"
-                placeholder="Select date"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-              />
-            )}
-          </div>
+          <DateRangePicker
+            startDate={startDate || ''}
+            endDate={endDate || ''}
+            onChange={(start, end) => {
+              setStartDate(start)
+              setEndDate(end)
+              setIsDateRange(true)
+            }}
+            label="Date Range"
+          />
         </div>
       )}
 
