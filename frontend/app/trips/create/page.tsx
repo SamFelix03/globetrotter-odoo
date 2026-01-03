@@ -194,7 +194,7 @@ export default function CreateTripPage() {
 
                         <Field>
                           <FieldLabel htmlFor="total_budget" className="text-lg font-medium text-gray-700 mb-2">
-                            Total Budget (USD)
+                            Total Budget (INR)
                           </FieldLabel>
                           <Input
                             id="total_budget"
