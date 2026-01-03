@@ -4,6 +4,23 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ImageUploadModal from '@/components/ImageUploadModal'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -54,150 +71,164 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link href="/login" className="font-medium text-green-800 hover:text-green-800">
-              sign in to your existing account
-            </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {success && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-900 dark:text-green-400 px-4 py-3 rounded">
-              <p className="font-semibold">Account created successfully!</p>
-              <p className="mt-2">We've sent a verification email to <strong>{email}</strong>. Please check your inbox and click the verification link to activate your account.</p>
-              <p className="mt-2">Once verified, you can sign in.</p>
-            </div>
-          )}
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="full-name" className="sr-only">
-                Full Name
-              </label>
-              <input
-                id="full-name"
-                name="full-name"
-                type="text"
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
-                placeholder="Full Name (optional)"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
-                Preferred Language (optional)
-              </label>
-              <select
-                id="language"
-                name="language"
-                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 bg-white rounded-md focus:outline-none focus:ring-green-800 focus:border-green-800 sm:text-sm"
-                value={languagePreference}
-                onChange={(e) => setLanguagePreference(e.target.value)}
-              >
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="it">Italian</option>
-                <option value="pt">Portuguese</option>
-                <option value="zh">Chinese</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Photo (optional)
-              </label>
-              <div className="flex items-center gap-4">
-                {profilePhotoUrl && (
-                  <img
-                    src={profilePhotoUrl}
-                    alt="Profile preview"
-                    className="w-16 h-16 object-cover rounded-full border-2 border-gray-300"
-                  />
+    <div className="flex min-h-svh w-full items-center justify-center bg-gray-50 p-6 md:p-10">
+      <div className="w-full max-w-md">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create your account</CardTitle>
+            <CardDescription>
+              Enter your information below to create your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit}>
+              <FieldGroup>
+                {success && (
+                  <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md text-sm">
+                    <p className="font-semibold">Account created successfully!</p>
+                    <p className="mt-2">We&apos;ve sent a verification email to <strong>{email}</strong>. Please check your inbox and click the verification link to activate your account.</p>
+                    <p className="mt-2">Once verified, you can sign in.</p>
+                  </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => setShowImageModal(true)}
-                  className="px-4 py-2 text-sm font-medium text-green-800 border border-green-800 rounded-md hover:bg-green-50"
-                >
-                  {profilePhotoUrl ? 'Change Photo' : 'Upload Photo'}
-                </button>
-                {profilePhotoUrl && (
-                  <button
-                    type="button"
-                    onClick={() => setProfilePhotoUrl('')}
-                    className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50"
-                  >
-                    Remove
-                  </button>
+                {error && (
+                  <FieldError className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+                    {error}
+                  </FieldError>
                 )}
-              </div>
-            </div>
-          </div>
+                
+                {/* Profile Photo Upload - At the top */}
+                <Field>
+                  <div className="flex flex-col items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowImageModal(true)}
+                      className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100 hover:border-green-800 transition-colors"
+                    >
+                      {profilePhotoUrl ? (
+                        <img
+                          src={profilePhotoUrl}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg
+                            className="w-10 h-10 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </button>
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowImageModal(true)}
+                        className="text-sm text-green-800 hover:text-green-900 font-medium"
+                      >
+                        {profilePhotoUrl ? 'Change photo' : 'Add photo'}
+                      </button>
+                      {profilePhotoUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setProfilePhotoUrl('')}
+                          className="text-sm text-gray-500 hover:text-gray-700"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </Field>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading || success}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-800 hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-800 disabled:opacity-50"
-            >
-              {loading ? 'Creating account...' : success ? 'Check your email' : 'Sign up'}
-            </button>
-          </div>
-          {success && (
-            <div className="text-center">
-              <Link href="/login" className="font-medium text-green-800 hover:text-green-900">
-                Go to login page →
-              </Link>
-            </div>
-          )}
-        </form>
+                <Field>
+                  <FieldLabel htmlFor="full-name">Full Name (optional)</FieldLabel>
+                  <Input
+                    id="full-name"
+                    name="full-name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Field>
+                <Field>
+                  <Label htmlFor="language" className="text-sm font-medium">
+                    Preferred Language
+                  </Label>
+                  <select
+                    id="language"
+                    name="language"
+                    className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    value={languagePreference}
+                    onChange={(e) => setLanguagePreference(e.target.value)}
+                  >
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="pt">Portuguese</option>
+                    <option value="zh">Chinese</option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                  </select>
+                </Field>
+                <Field>
+                  <Button type="submit" disabled={loading || success} className="w-full">
+                    {loading ? 'Creating account...' : success ? 'Check your email' : 'Sign up'}
+                  </Button>
+                  {success && (
+                    <FieldDescription className="text-center">
+                      <Link href="/login" className="text-green-800 hover:underline">
+                        Go to login page →
+                      </Link>
+                    </FieldDescription>
+                  )}
+                  <FieldDescription className="text-center">
+                    Already have an account?{' '}
+                    <Link href="/login" className="text-green-800 hover:underline">
+                      Sign in
+                    </Link>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </form>
+          </CardContent>
+        </Card>
 
         <ImageUploadModal
           isOpen={showImageModal}
@@ -214,4 +245,3 @@ export default function SignupPage() {
     </div>
   )
 }
-
