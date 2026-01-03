@@ -45,14 +45,22 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-green-800 via-green-700 to-green-900 text-white pt-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="relative pt-24 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/hero-banner.png)',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Welcome to GlobeTrotter
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white drop-shadow-lg">
+              Plan your next adventure with ease.
             </h1>
-            <p className="text-xl md:text-2xl text-green-100 mb-8 max-w-2xl mx-auto">
-              Plan your next adventure with ease. Create multi-city trips, build detailed itineraries, and track your budget all in one place.
+            <p className="text-xl md:text-2xl text-white mb-8 max-w-2xl mx-auto drop-shadow-md">
+              Create multi-city trips, build detailed itineraries, and track your budget all in one place.
             </p>
             <Link
               href="/trips/create"
