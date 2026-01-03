@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Calendar, MapPin, Loader2, ArrowLeft } from 'lucide-react'
@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 
-export default function AITripPlanPage() {
+function AITripPlanContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const destination = searchParams.get('destination') || ''
@@ -304,6 +304,20 @@ export default function AITripPlanPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function AITripPlanPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 pt-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center py-12 text-gray-600">Loading...</div>
+        </div>
+      </div>
+    }>
+      <AITripPlanContent />
+    </Suspense>
   )
 }
 

@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function CitySearchPage() {
+function CitySearchContent() {
   const searchParams = useSearchParams()
   const [search, setSearch] = useState('')
   const [country, setCountry] = useState('')
@@ -115,6 +115,20 @@ export default function CitySearchPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function CitySearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 pt-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12 text-gray-600">Loading...</div>
+        </div>
+      </div>
+    }>
+      <CitySearchContent />
+    </Suspense>
   )
 }
 

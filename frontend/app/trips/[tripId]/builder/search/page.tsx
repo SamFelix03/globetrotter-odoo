@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function BuilderSearchPage() {
+function BuilderSearchContent() {
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -697,6 +697,20 @@ export default function BuilderSearchPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function BuilderSearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 pt-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12 text-gray-600">Loading...</div>
+        </div>
+      </div>
+    }>
+      <BuilderSearchContent />
+    </Suspense>
   )
 }
 

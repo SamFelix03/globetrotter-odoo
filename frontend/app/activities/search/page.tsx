@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function ActivitySearchPage() {
+function ActivitySearchContent() {
   const searchParams = useSearchParams()
   const cityId = searchParams.get('city_id')
   const [search, setSearch] = useState('')
@@ -129,6 +129,20 @@ export default function ActivitySearchPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ActivitySearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 pt-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12 text-gray-600">Loading...</div>
+        </div>
+      </div>
+    }>
+      <ActivitySearchContent />
+    </Suspense>
   )
 }
 
