@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ImageUploadModal from '@/components/ImageUploadModal'
+import DateRangePicker from '@/components/DateRangePicker'
 
 export default function CreateTripPage() {
   const router = useRouter()
@@ -88,35 +89,15 @@ export default function CreateTripPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Start Date *
-              </label>
-              <input
-                type="date"
-                id="start_date"
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                value={formData.start_date}
-                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                End Date *
-              </label>
-              <input
-                type="date"
-                id="end_date"
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                value={formData.end_date}
-                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-              />
-            </div>
-          </div>
+          <DateRangePicker
+            startDate={formData.start_date}
+            endDate={formData.end_date}
+            onChange={(start, end) => {
+              setFormData({ ...formData, start_date: start, end_date: end })
+            }}
+            label="Trip Dates"
+            required
+          />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
