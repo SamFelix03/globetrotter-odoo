@@ -114,6 +114,7 @@ function AITripPlanContent() {
           startDate,
           endDate,
           originState: userState,
+          imageUrl,
         }),
       })
 

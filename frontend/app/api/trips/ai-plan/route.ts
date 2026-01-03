@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { destination, budget, startDate, endDate, originState } = body;
+    const { destination, budget, startDate, endDate, originState, imageUrl } =
+      body;
 
     if (!destination || !budget || !startDate || !endDate) {
       return NextResponse.json(
@@ -167,6 +168,7 @@ Return ONLY the JSON object, nothing else.`;
             (sum: number, section: any) => sum + (section.price || 0),
             0
           ) || 0,
+        cover_photo_url: imageUrl || null,
       })
       .select()
       .single();
