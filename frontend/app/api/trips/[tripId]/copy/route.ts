@@ -68,7 +68,44 @@ export async function POST(
       )
     }
 
-    // Copy stops
+    // Copy trip sections (new itinerary builder)
+    const { data: originalSections } = await supabase
+      .from('trip_sections')
+      .select('*')
+      .eq('trip_id', tripId)
+      .order('section_order', { ascending: true })
+
+    if (originalSections && originalSections.length > 0) {
+      const newSections = originalSections.map((section: any) => ({
+        trip_id: newTrip.trip_id,
+        section_order: section.section_order,
+        category: section.category,
+        place: section.place,
+        price: section.price,
+        currency_code: section.currency_code,
+        date_single: section.date_single,
+        date_start: section.date_start,
+        date_end: section.date_end,
+        is_date_range: section.is_date_range,
+        from_location: section.from_location,
+        to_location: section.to_location,
+        transport_mode: section.transport_mode,
+        activity_theme: section.activity_theme,
+        price_per_night: section.price_per_night,
+        metadata: section.metadata || {},
+      }))
+
+      const { error: sectionsError } = await supabase
+        .from('trip_sections')
+        .insert(newSections)
+
+      if (sectionsError) {
+        console.error('Error copying sections:', sectionsError)
+        // Continue even if sections copy fails
+      }
+    }
+
+    // Copy stops (legacy itinerary)
     const { data: originalStops } = await supabase
       .from('trip_stops')
       .select('*')
