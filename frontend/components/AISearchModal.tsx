@@ -142,7 +142,25 @@ export default function AISearchModal({
   }
 
   const handleSelect = (option: any) => {
-    onSelectOption(option)
+    // Include search terms along with the selected option
+    const enrichedOption = {
+      ...option,
+      // Include search terms for travel
+      ...(category === 'travel' && {
+        from: from,
+        to: to,
+      }),
+      // Include search terms for activity
+      ...(category === 'activity' && {
+        place: activityPlace,
+        theme: activityTheme,
+      }),
+      // Include search terms for stay
+      ...(category === 'stay' && {
+        location: stayLocation,
+      }),
+    }
+    onSelectOption(enrichedOption)
     onClose()
   }
 

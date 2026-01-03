@@ -443,6 +443,30 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
     { id: 'stay', name: 'Stay', icon: '🏨' },
   ]
 
+  // Function to clear all form state
+  const clearFormState = () => {
+    setCurrentPhase(1)
+    setSelectedCategory(null)
+    setEntryMethod(null)
+    setPlace('')
+    setPrice('')
+    setDateRange('')
+    setIsDateRange(false)
+    setStartDate('')
+    setEndDate('')
+    setFromLocation('')
+    setToLocation('')
+    setSelectedTransportMode('')
+    setPricePerNight(null)
+    setShowAIModal(false)
+    // Clear cache
+    try {
+      localStorage.removeItem(cacheKey)
+    } catch (error) {
+      console.error('Error clearing cache:', error)
+    }
+  }
+
   const handleCategorySelect = (category: 'travel' | 'activity' | 'stay') => {
     setSelectedCategory(category)
     setCurrentPhase(2)
@@ -460,18 +484,25 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
   const handleAISelectOption = (option: any) => {
     if (!selectedCategory) return
 
-    // Fill form based on selected option
+    // Fill form based on selected option and search terms from modal
     if (selectedCategory === 'travel') {
-      setFromLocation(fromLocation || '')
-      setToLocation(toLocation || '')
-      setSelectedTransportMode(option.mode)
+      // Use search terms from modal if available, otherwise use form state
+      const fromValue = option.from || fromLocation || ''
+      const toValue = option.to || toLocation || ''
+      setFromLocation(fromValue)
+      setToLocation(toValue)
+      setSelectedTransportMode(option.mode || '')
       setPrice(option.price_numeric?.toString() || '')
-      setPlace(`${fromLocation || ''} to ${toLocation || ''} (${option.mode})`)
+      setPlace(`${fromValue} to ${toValue} (${option.mode || ''})`)
     } else if (selectedCategory === 'activity') {
-      setPlace(option.activity_name)
+      // Use activity name from API response, or search term as fallback
+      const placeValue = option.activity_name || option.place || ''
+      setPlace(placeValue)
       setPrice(option.price_numeric?.toString() || '')
     } else if (selectedCategory === 'stay') {
-      setPlace(option.hotel_name)
+      // Use search terms from modal if available
+      const locationValue = option.location || option.hotel_name || ''
+      setPlace(locationValue)
       const pricePerNight = option.price_numeric
       setPricePerNight(pricePerNight)
       
@@ -500,7 +531,10 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
+            onClick={() => {
+              clearFormState()
+              onClose()
+            }}
             className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50"
           >
             <X className="h-4 w-4" />
@@ -566,8 +600,7 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setCurrentPhase(1)
-                    setSelectedCategory(null)
+                    clearFormState()
                   }}
                 >
                   Back
@@ -593,6 +626,17 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
                   onClick={() => {
                     setCurrentPhase(2)
                     setEntryMethod(null)
+                    // Clear form fields when going back to entry method selection
+                    setPlace('')
+                    setPrice('')
+                    setDateRange('')
+                    setIsDateRange(false)
+                    setStartDate('')
+                    setEndDate('')
+                    setFromLocation('')
+                    setToLocation('')
+                    setSelectedTransportMode('')
+                    setPricePerNight(null)
                   }}
                 >
                   Back
@@ -835,7 +879,10 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
               <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
                 <Button
                   variant="outline"
-                  onClick={onClose}
+                  onClick={() => {
+                    clearFormState()
+                    onClose()
+                  }}
                 >
                   Cancel
                 </Button>
