@@ -3,9 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d']
+const COLORS = ['#166534', '#22c55e', '#4ade80', '#86efac', '#15803d', '#16a34a']
 
 export default function BudgetPage() {
   const params = useParams()
@@ -57,7 +62,7 @@ export default function BudgetPage() {
     )
   }
 
-  const pieData = budget.breakdown?.map((item: any) => ({
+  const pieData = budget.breakdown?.filter((item: any) => item.total > 0).map((item: any) => ({
     name: item.category_name,
     value: item.total,
   })) || []
@@ -105,46 +110,67 @@ export default function BudgetPage() {
             </div>
           )}
 
-          {pieData.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Expense Breakdown</h2>
-              <ResponsiveContainer width="100%" height={400}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieData.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Cost Breakdown by Category</h2>
+            {pieData.length > 0 ? (
+              <ChartContainer
+                config={pieData.reduce((acc: any, item: any, index: number) => {
+                  acc[item.name] = {
+                    label: item.name,
+                    color: COLORS[index % COLORS.length],
+                  }
+                  return acc
+                }, {})}
+                className="h-[400px] w-full"
+              >
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {pieData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center h-[400px] bg-gray-50 rounded-lg border border-gray-200">
+                <p className="text-gray-500">No cost data available. Add sections to your itinerary to see the breakdown.</p>
+              </div>
+            )}
+          </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Expenses by Category</h2>
-            <div className="space-y-2">
-              {budget.breakdown?.map((item: any) => (
-                <div key={item.category_name} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <div className="font-semibold text-gray-900">{item.category_name}</div>
-                    <div className="text-sm text-gray-600">{item.count} expenses</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Cost by Category</h2>
+            {budget.breakdown && budget.breakdown.length > 0 ? (
+              <div className="space-y-2">
+                {budget.breakdown.map((item: any) => (
+                  <div key={item.category_name} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="font-semibold text-gray-900">{item.category_name}</div>
+                      <div className="text-sm text-gray-600">{item.count} {item.count === 1 ? 'item' : 'items'}</div>
+                    </div>
+                    <div className="text-xl font-bold text-gray-900">
+                      ₹{item.total.toFixed(2)}
+                    </div>
                   </div>
-                  <div className="text-xl font-bold text-gray-900">
-                    ${item.total.toFixed(2)}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 bg-gray-50 rounded-lg text-center text-gray-500">
+                No cost data available
+              </div>
+            )}
           </div>
         </div>
       </div>

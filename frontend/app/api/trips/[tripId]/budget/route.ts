@@ -23,7 +23,44 @@ export async function GET(
       )
     }
 
-    // Get expense breakdown by category
+    // Get sections (itinerary items)
+    const { data: sections } = await supabase
+      .from('trip_sections')
+      .select('category, price')
+      .eq('trip_id', tripId)
+
+    // Calculate estimated_cost from sections
+    let estimatedCost = 0
+    const sectionBreakdown: Record<string, any> = {
+      'Travel': { category_name: 'Travel', total: 0, count: 0 },
+      'Activity': { category_name: 'Activity', total: 0, count: 0 },
+      'Stay': { category_name: 'Stay', total: 0, count: 0 },
+    }
+
+    sections?.forEach((section: any) => {
+      const price = parseFloat(section.price || 0)
+      if (!isNaN(price) && price > 0) {
+        estimatedCost += price
+        
+        // Map category to display name
+        let categoryName = 'Other'
+        if (section.category === 'travel') categoryName = 'Travel'
+        else if (section.category === 'activity') categoryName = 'Activity'
+        else if (section.category === 'stay') categoryName = 'Stay'
+        
+        if (!sectionBreakdown[categoryName]) {
+          sectionBreakdown[categoryName] = {
+            category_name: categoryName,
+            total: 0,
+            count: 0,
+          }
+        }
+        sectionBreakdown[categoryName].total += price
+        sectionBreakdown[categoryName].count += 1
+      }
+    })
+
+    // Get expense breakdown by category (for actual expenses, separate from estimated)
     const { data: expenses } = await supabase
       .from('trip_expenses')
       .select(`
@@ -37,14 +74,14 @@ export async function GET(
       `)
       .eq('trip_id', tripId)
 
-    // Calculate breakdown
-    const breakdown: Record<string, any> = {}
+    // Calculate expense breakdown
+    const expenseBreakdown: Record<string, any> = {}
     let totalExpenses = 0
 
     expenses?.forEach((expense: any) => {
       const categoryName = expense.expense_categories?.category_name || 'Other'
-      if (!breakdown[categoryName]) {
-        breakdown[categoryName] = {
+      if (!expenseBreakdown[categoryName]) {
+        expenseBreakdown[categoryName] = {
           category_name: categoryName,
           color_code: expense.expense_categories?.color_code || '#607D8B',
           icon_name: expense.expense_categories?.icon_name || 'misc',
@@ -53,27 +90,32 @@ export async function GET(
           expenses: []
         }
       }
-      breakdown[categoryName].total += parseFloat(expense.amount || 0)
-      breakdown[categoryName].count += 1
-      breakdown[categoryName].expenses.push(expense)
+      expenseBreakdown[categoryName].total += parseFloat(expense.amount || 0)
+      expenseBreakdown[categoryName].count += 1
+      expenseBreakdown[categoryName].expenses.push(expense)
       totalExpenses += parseFloat(expense.amount || 0)
     })
+
+    // Use section breakdown for the pie chart (estimated costs from itinerary)
+    const breakdown = Object.values(sectionBreakdown).filter((item: any) => item.total > 0)
 
     // Calculate days
     const startDate = new Date(trip.start_date)
     const endDate = new Date(trip.end_date)
     const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
-    const avgCostPerDay = days > 0 ? totalExpenses / days : 0
+    
+    // Calculate avg/day from estimated_cost
+    const avgCostPerDay = days > 0 ? estimatedCost / days : 0
 
     return NextResponse.json({
       trip_id: tripId,
       total_budget: trip.total_budget,
-      estimated_cost: trip.estimated_cost || totalExpenses,
-      total_expenses: totalExpenses,
+      estimated_cost: estimatedCost, // Calculated from sections
+      total_expenses: totalExpenses, // Actual expenses (separate)
       days,
       avg_cost_per_day: avgCostPerDay,
-      breakdown: Object.values(breakdown),
-      is_over_budget: trip.total_budget ? totalExpenses > trip.total_budget : false
+      breakdown: breakdown, // Breakdown by section categories
+      is_over_budget: trip.total_budget ? estimatedCost > trip.total_budget : false
     }, { status: 200 })
   } catch (error: any) {
     return NextResponse.json(
