@@ -59,9 +59,13 @@ export default function Navbar() {
           <div className="flex items-center gap-6">
             <Link 
               href="/dashboard" 
-              className="flex items-center text-lg font-bold text-green-800 hover:text-green-900 transition-colors"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              🌍 GlobeTrotter
+              <img 
+                src="/logo.png" 
+                alt="GlobeTrotter" 
+                className="h-16 w-auto"
+              />
             </Link>
             <div className="hidden md:flex items-center gap-1">
               <Link
