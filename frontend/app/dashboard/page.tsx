@@ -67,11 +67,15 @@ export default function DashboardPage() {
           )
           const data = await response.json()
           const country = data.countryName || data.countryCode
+          const state = data.principalSubdivision || data.administrativeArea || ''
 
           if (country) {
             setUserCountry(country)
             // Store in cookie
             document.cookie = `user_country=${country}; path=/; max-age=${365 * 24 * 60 * 60}`
+            if (state) {
+              document.cookie = `user_state=${encodeURIComponent(state)}; path=/; max-age=${365 * 24 * 60 * 60}`
+            }
             fetchPopularPlaces(country)
           } else {
             setLoading(false)
@@ -136,7 +140,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative pt-24 overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: 'url(/hero-banner.png)',
@@ -210,6 +214,7 @@ export default function DashboardPage() {
                     <div
                       key={index}
                       className="flex flex-col items-center group cursor-pointer flex-shrink-0"
+                      onClick={() => router.push(`/trips/ai-plan?destination=${encodeURIComponent(place.name)}&imageUrl=${encodeURIComponent(place.imageUrl || '')}`)}
                     >
                       <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden shadow-xl ring-4 ring-white hover:ring-green-200 transition-all hover:scale-105 mb-4">
                         {place.imageUrl ? (

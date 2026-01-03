@@ -79,8 +79,44 @@ export default function ItineraryBuilderPage() {
     try {
       const res = await fetch(`/api/trips/${tripId}/sections`)
       const data = await res.json()
-      if (data.sections) {
+      if (data.sections && data.sections.length > 0) {
         setSavedSections(data.sections)
+        // If no forms are open and we have saved sections, load them into forms
+        if (sectionFormIds.length === 0) {
+          const newFormIds: number[] = []
+          data.sections.forEach((section: any, index: number) => {
+            const formId = nextFormId + index
+            newFormIds.push(formId)
+
+            // Populate localStorage with section data
+            const cacheKey = `sectionForm_${tripId}_${formId}`
+            const formData: any = {
+              currentPhase: 3, // Skip to form phase since data is already filled
+              selectedCategory: section.category,
+              entryMethod: 'manual',
+              place: section.place || '',
+              price: section.price?.toString() || '',
+              isDateRange: section.is_date_range || false,
+              startDate: section.date_start || '',
+              endDate: section.date_end || '',
+              dateRange: section.date_single || '',
+              fromLocation: section.from_location || '',
+              toLocation: section.to_location || '',
+              selectedTransportMode: section.transport_mode || '',
+              pricePerNight: section.price_per_night || null,
+            }
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(formData))
+            } catch (error) {
+              console.error('Error saving section to cache:', error)
+            }
+          })
+
+          if (newFormIds.length > 0) {
+            setSectionFormIds(newFormIds)
+            setNextFormId(nextFormId + newFormIds.length)
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching sections:', error)
@@ -273,8 +309,8 @@ export default function ItineraryBuilderPage() {
             </div>
           ) : (
             sectionFormIds.map((formId, index) => (
-              <div 
-                key={formId} 
+              <div
+                key={formId}
                 className={`relative ${newlyAddedSectionId === formId ? 'animate-in fade-in slide-in-from-bottom-4 duration-500' : ''}`}
               >
                 {/* Section Form */}
@@ -364,7 +400,7 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
   const [selectedCategory, setSelectedCategory] = useState<'travel' | 'activity' | 'stay' | null>(null)
   const [entryMethod, setEntryMethod] = useState<'manual' | 'ai' | null>(null) // 'manual' or 'ai'
   const [showAIModal, setShowAIModal] = useState(false)
-  
+
   const [place, setPlace] = useState('')
   const [price, setPrice] = useState('')
   const [dateRange, setDateRange] = useState('')
@@ -505,7 +541,7 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
       setPlace(locationValue)
       const pricePerNight = option.price_numeric
       setPricePerNight(pricePerNight)
-      
+
       // Calculate total price based on date range
       let totalPrice = pricePerNight
       if (isDateRange && startDate && endDate) {
@@ -644,236 +680,236 @@ function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: numbe
               </div>
 
               <div className="space-y-4">
-          {/* Travel-specific fields */}
-          {selectedCategory === 'travel' && (
-            <>
-              <div className="grid grid-cols-2 gap-4">
+                {/* Travel-specific fields */}
+                {selectedCategory === 'travel' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          From
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter origin location"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          value={fromLocation}
+                          onChange={(e) => setFromLocation(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          To
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter destination location"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          value={toLocation}
+                          onChange={(e) => setToLocation(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Transportation Mode
+                      </label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {['flight', 'train', 'bus', 'car'].map((mode) => (
+                          <button
+                            key={mode}
+                            type="button"
+                            onClick={() => setSelectedTransportMode(mode)}
+                            className={`px-4 py-2 rounded-md border-2 transition-all capitalize ${selectedTransportMode === mode
+                              ? 'border-green-800 bg-green-50 dark:bg-blue-900/20 text-green-900 dark:text-blue-300'
+                              : 'border-gray-300 hover:border-green-300 dark:hover:border-green-800'
+                              }`}
+                          >
+                            {mode}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Activity-specific field */}
+                {selectedCategory === 'activity' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Activity Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter activity name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      value={place}
+                      onChange={(e) => setPlace(e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {/* Stay category - show Place */}
+                {selectedCategory === 'stay' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Place
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter place name"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      value={place}
+                      onChange={(e) => setPlace(e.target.value)}
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    From
+                    Price
                   </label>
                   <input
-                    type="text"
-                    placeholder="Enter origin location"
+                    type="number"
+                    placeholder="Enter price"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={fromLocation}
-                    onChange={(e) => setFromLocation(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    To
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter destination location"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={toLocation}
-                    onChange={(e) => setToLocation(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Transportation Mode
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {['flight', 'train', 'bus', 'car'].map((mode) => (
-                    <button
-                      key={mode}
-                      type="button"
-                      onClick={() => setSelectedTransportMode(mode)}
-                      className={`px-4 py-2 rounded-md border-2 transition-all capitalize ${selectedTransportMode === mode
-                        ? 'border-green-800 bg-green-50 dark:bg-blue-900/20 text-green-900 dark:text-blue-300'
-                        : 'border-gray-300 hover:border-green-300 dark:hover:border-green-800'
-                        }`}
-                    >
-                      {mode}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Activity-specific field */}
-          {selectedCategory === 'activity' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Activity Name
-              </label>
-              <input
-                type="text"
-                placeholder="Enter activity name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                value={place}
-                onChange={(e) => setPlace(e.target.value)}
-              />
-            </div>
-          )}
-
-          {/* Stay category - show Place */}
-          {selectedCategory === 'stay' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Place
-              </label>
-              <input
-                type="text"
-                placeholder="Enter place name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                value={place}
-                onChange={(e) => setPlace(e.target.value)}
-              />
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Price
-            </label>
-            <input
-              type="number"
-              placeholder="Enter price"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              value={price}
-              onChange={(e) => {
-                setPrice(e.target.value)
-                // For Stay category in single date mode, store as price per night
-                if (selectedCategory === 'stay' && !isDateRange) {
-                  const priceNum = parseFloat(e.target.value)
-                  if (!isNaN(priceNum)) {
-                    setPricePerNight(priceNum)
-                  }
-                }
-              }}
-              min="0"
-              step="0.01"
-            />
-          </div>
-
-          {/* Date fields - different for Activity vs others */}
-          {selectedCategory === 'activity' ? (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Date
-              </label>
-              <input
-                type="date"
-                placeholder="Select date"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-              />
-            </div>
-          ) : (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Date / Date Range
-              </label>
-              <div className="mb-2">
-                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <input
-                    type="checkbox"
-                    checked={isDateRange}
+                    value={price}
                     onChange={(e) => {
-                      const newIsDateRange = e.target.checked
-                      setIsDateRange(newIsDateRange)
-
-                      // For Stay category: handle price conversion when switching date range mode
-                      if (selectedCategory === 'stay' && price) {
-                        const priceNum = parseFloat(price)
+                      setPrice(e.target.value)
+                      // For Stay category in single date mode, store as price per night
+                      if (selectedCategory === 'stay' && !isDateRange) {
+                        const priceNum = parseFloat(e.target.value)
                         if (!isNaN(priceNum)) {
-                          if (newIsDateRange && !isDateRange) {
-                            // Switching from single date to date range
-                            // Store current price as price per night
-                            setPricePerNight(priceNum)
-                            if (startDate && endDate) {
-                              const start = new Date(startDate)
-                              const end = new Date(endDate)
-                              const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-                              if (nights > 0) {
-                                setPrice((priceNum * nights).toFixed(2))
-                              }
-                            }
-                          } else if (!newIsDateRange && isDateRange) {
-                            // Switching from date range to single date
-                            // Use stored price per night or calculate from current price
-                            if (pricePerNight) {
-                              setPrice(pricePerNight.toFixed(2))
-                            } else if (startDate && endDate) {
-                              const start = new Date(startDate)
-                              const end = new Date(endDate)
-                              const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-                              if (nights > 0) {
-                                setPrice((priceNum / nights).toFixed(2))
-                                setPricePerNight(priceNum / nights)
-                              }
-                            }
-                          }
+                          setPricePerNight(priceNum)
                         }
                       }
                     }}
-                    className="rounded"
-                  />
-                  Use date range
-                </label>
-              </div>
-              {isDateRange ? (
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="date"
-                    placeholder="Start Date"
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                    value={startDate}
-                    onChange={(e) => {
-                      setStartDate(e.target.value)
-                      // Recalculate price for Stay when dates change in date range mode
-                      if (selectedCategory === 'stay' && isDateRange && e.target.value && endDate) {
-                        const nights = calculateNights(e.target.value, endDate)
-                        if (nights > 0) {
-                          const perNight = pricePerNight || (price ? parseFloat(price) / (calculateNights(startDate, endDate) || 1) : 0)
-                          if (perNight > 0) {
-                            setPricePerNight(perNight)
-                            setPrice((perNight * nights).toFixed(2))
-                          }
-                        }
-                      }
-                    }}
-                  />
-                  <input
-                    type="date"
-                    placeholder="End Date"
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                    value={endDate}
-                    onChange={(e) => {
-                      setEndDate(e.target.value)
-                      // Recalculate price for Stay when dates change in date range mode
-                      if (selectedCategory === 'stay' && isDateRange && startDate && e.target.value) {
-                        const nights = calculateNights(startDate, e.target.value)
-                        if (nights > 0) {
-                          const perNight = pricePerNight || (price ? parseFloat(price) / (calculateNights(startDate, endDate) || 1) : 0)
-                          if (perNight > 0) {
-                            setPricePerNight(perNight)
-                            setPrice((perNight * nights).toFixed(2))
-                          }
-                        }
-                      }
-                    }}
+                    min="0"
+                    step="0.01"
                   />
                 </div>
-              ) : (
-                <input
-                  type="date"
-                  placeholder="Select date"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                />
-              )}
-            </div>
-          )}
+
+                {/* Date fields - different for Activity vs others */}
+                {selectedCategory === 'activity' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      placeholder="Select date"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                      value={dateRange}
+                      onChange={(e) => setDateRange(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Date / Date Range
+                    </label>
+                    <div className="mb-2">
+                      <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <input
+                          type="checkbox"
+                          checked={isDateRange}
+                          onChange={(e) => {
+                            const newIsDateRange = e.target.checked
+                            setIsDateRange(newIsDateRange)
+
+                            // For Stay category: handle price conversion when switching date range mode
+                            if (selectedCategory === 'stay' && price) {
+                              const priceNum = parseFloat(price)
+                              if (!isNaN(priceNum)) {
+                                if (newIsDateRange && !isDateRange) {
+                                  // Switching from single date to date range
+                                  // Store current price as price per night
+                                  setPricePerNight(priceNum)
+                                  if (startDate && endDate) {
+                                    const start = new Date(startDate)
+                                    const end = new Date(endDate)
+                                    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+                                    if (nights > 0) {
+                                      setPrice((priceNum * nights).toFixed(2))
+                                    }
+                                  }
+                                } else if (!newIsDateRange && isDateRange) {
+                                  // Switching from date range to single date
+                                  // Use stored price per night or calculate from current price
+                                  if (pricePerNight) {
+                                    setPrice(pricePerNight.toFixed(2))
+                                  } else if (startDate && endDate) {
+                                    const start = new Date(startDate)
+                                    const end = new Date(endDate)
+                                    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+                                    if (nights > 0) {
+                                      setPrice((priceNum / nights).toFixed(2))
+                                      setPricePerNight(priceNum / nights)
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }}
+                          className="rounded"
+                        />
+                        Use date range
+                      </label>
+                    </div>
+                    {isDateRange ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        <input
+                          type="date"
+                          placeholder="Start Date"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value)
+                            // Recalculate price for Stay when dates change in date range mode
+                            if (selectedCategory === 'stay' && isDateRange && e.target.value && endDate) {
+                              const nights = calculateNights(e.target.value, endDate)
+                              if (nights > 0) {
+                                const perNight = pricePerNight || (price ? parseFloat(price) / (calculateNights(startDate, endDate) || 1) : 0)
+                                if (perNight > 0) {
+                                  setPricePerNight(perNight)
+                                  setPrice((perNight * nights).toFixed(2))
+                                }
+                              }
+                            }
+                          }}
+                        />
+                        <input
+                          type="date"
+                          placeholder="End Date"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value)
+                            // Recalculate price for Stay when dates change in date range mode
+                            if (selectedCategory === 'stay' && isDateRange && startDate && e.target.value) {
+                              const nights = calculateNights(startDate, e.target.value)
+                              if (nights > 0) {
+                                const perNight = pricePerNight || (price ? parseFloat(price) / (calculateNights(startDate, endDate) || 1) : 0)
+                                if (perNight > 0) {
+                                  setPricePerNight(perNight)
+                                  setPrice((perNight * nights).toFixed(2))
+                                }
+                              }
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <input
+                        type="date"
+                        placeholder="Select date"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                        value={dateRange}
+                        onChange={(e) => setDateRange(e.target.value)}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
