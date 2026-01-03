@@ -116,7 +116,7 @@ export async function POST(
       category,
       place,
       price,
-      currency_code = 'USD',
+      currency_code = 'INR',
       date_single,
       date_start,
       date_end,

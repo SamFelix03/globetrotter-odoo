@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isSameDay, isSameMonth } from 'date-fns'
+import { formatDateDDMMYYYY } from '@/lib/dateUtils'
 
 export default function CalendarPage() {
   const params = useParams()
@@ -62,7 +63,7 @@ export default function CalendarPage() {
     // First, check new sections (trip_sections)
     sections.forEach((section) => {
       let matchesDate = false
-      
+
       if (section.is_date_range) {
         // Check if date falls within the date range
         if (section.date_start && section.date_end) {
@@ -205,11 +206,10 @@ export default function CalendarPage() {
               return (
                 <div
                   key={day.toISOString()}
-                  className={`min-h-24 p-2 border rounded ${
-                    isTripDay
-                      ? 'bg-green-50 dark:bg-blue-900/20 border-green-300 dark:border-blue-700'
-                      : 'bg-gray-50 border-gray-200'
-                  } ${!isCurrentMonth ? 'opacity-50' : ''}`}
+                  className={`min-h-24 p-2 border rounded ${isTripDay
+                    ? 'bg-green-50 dark:bg-blue-900/20 border-green-300 dark:border-blue-700'
+                    : 'bg-gray-50 border-gray-200'
+                    } ${!isCurrentMonth ? 'opacity-50' : ''}`}
                 >
                   <div className={`text-sm font-medium ${isTripDay ? 'text-green-900 dark:text-blue-300' : 'text-gray-600'}`}>
                     {format(day, 'd')}
@@ -240,7 +240,7 @@ export default function CalendarPage() {
               return (
                 <div key={day.toISOString()} className="border-l-2 border-green-800 pl-4">
                   <div className="font-semibold text-gray-900">
-                    {format(day, 'EEEE, MMMM d, yyyy')}
+                    {formatDateDDMMYYYY(day)}
                   </div>
                   {activities.length > 0 ? (
                     <div className="mt-2 space-y-2">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 
 export default function TripViewPage() {
   const params = useParams()
@@ -85,10 +86,10 @@ export default function TripViewPage() {
           )}
           <div className="flex gap-6 text-sm text-gray-600">
             <span>
-              {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}
+              {formatDateRange(trip.start_date, trip.end_date)}
             </span>
             {trip.estimated_cost && (
-              <span>Estimated: ${trip.estimated_cost.toFixed(2)}</span>
+              <span>Estimated: ₹{trip.estimated_cost.toFixed(2)}</span>
             )}
           </div>
         </div>
@@ -150,19 +151,19 @@ export default function TripViewPage() {
                       )}
                       {section.price && (
                         <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                          ${section.price.toFixed(2)} {section.currency_code || 'USD'}
+                          ₹{section.price.toFixed(2)} {section.currency_code || 'INR'}
                         </p>
                       )}
                       {section.is_date_range ? (
                         section.date_start && section.date_end && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {new Date(section.date_start).toLocaleDateString()} - {new Date(section.date_end).toLocaleDateString()}
+                            {formatDateRange(section.date_start, section.date_end)}
                           </p>
                         )
                       ) : (
                         section.date_single && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {new Date(section.date_single).toLocaleDateString()}
+                            {formatDateDDMMYYYY(section.date_single)}
                           </p>
                         )
                       )}
@@ -182,12 +183,12 @@ export default function TripViewPage() {
                       )}
                       {section.price && (
                         <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                          ${section.price.toFixed(2)} {section.currency_code || 'USD'}
+                          ₹{section.price.toFixed(2)} {section.currency_code || 'INR'}
                         </p>
                       )}
                       {section.date_single && (
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {new Date(section.date_single).toLocaleDateString()}
+                          {formatDateDDMMYYYY(section.date_single)}
                         </p>
                       )}
                     </div>
@@ -201,24 +202,24 @@ export default function TripViewPage() {
                       </h3>
                       {section.price_per_night && (
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          ${section.price_per_night.toFixed(2)} {section.currency_code || 'USD'} per night
+                          ₹{section.price_per_night.toFixed(2)} {section.currency_code || 'INR'} per night
                         </p>
                       )}
                       {section.price && (
                         <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                          Total: ${section.price.toFixed(2)} {section.currency_code || 'USD'}
+                          Total: ₹{section.price.toFixed(2)} {section.currency_code || 'INR'}
                         </p>
                       )}
                       {section.is_date_range ? (
                         section.date_start && section.date_end && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {new Date(section.date_start).toLocaleDateString()} - {new Date(section.date_end).toLocaleDateString()}
+                            {formatDateRange(section.date_start, section.date_end)}
                           </p>
                         )
                       ) : (
                         section.date_single && (
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {new Date(section.date_single).toLocaleDateString()}
+                            {formatDateDDMMYYYY(section.date_single)}
                           </p>
                         )
                       )}
@@ -239,7 +240,7 @@ export default function TripViewPage() {
                   {stop.cities?.city_name}, {stop.cities?.country}
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {new Date(stop.arrival_date).toLocaleDateString()} - {new Date(stop.departure_date).toLocaleDateString()}
+                  {formatDateRange(stop.arrival_date, stop.departure_date)}
                 </p>
 
                 {stop.itinerary_days && stop.itinerary_days.length > 0 && (
@@ -247,7 +248,7 @@ export default function TripViewPage() {
                     {stop.itinerary_days.map((day: any) => (
                       <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
                         <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
+                          Day {day.day_number} - {formatDateDDMMYYYY(day.day_date)}
                         </h3>
                         {day.itinerary_activities && day.itinerary_activities.length > 0 && (
                           <div className="mt-2 space-y-2">

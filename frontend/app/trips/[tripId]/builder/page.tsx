@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { formatDateDDMMYYYY } from '@/lib/dateUtils'
 
 export default function ItineraryBuilderPage() {
   const params = useParams()
@@ -102,7 +103,7 @@ export default function ItineraryBuilderPage() {
               category: formData.selectedCategory,
               place: formData.place || null,
               price: formData.price || null,
-              currency_code: 'USD',
+              currency_code: 'INR',
               is_date_range: formData.is_date_range || false,
             }
 
@@ -784,7 +785,7 @@ function StopBuilder({ stop, tripId, onDelete }: any) {
           <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold text-gray-900">
-                Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
+                Day {day.day_number} - {formatDateDDMMYYYY(day.day_date)}
               </h3>
               <button
                 onClick={() => {

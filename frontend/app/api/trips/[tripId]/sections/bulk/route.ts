@@ -77,7 +77,7 @@ export async function POST(
         category: section.category,
         place: section.place || null,
         price: section.price ? parseFloat(section.price) : null,
-        currency_code: section.currency_code || 'USD',
+        currency_code: section.currency_code || 'INR',
         date_single: section.is_date_range ? null : (section.date_single || null),
         date_start: section.is_date_range ? (section.date_start || null) : null,
         date_end: section.is_date_range ? (section.date_end || null) : null,

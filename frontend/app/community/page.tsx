@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { format } from 'date-fns'
+import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 import { ChevronDown, ChevronUp, MessageCircle, Calendar, MapPin, DollarSign } from 'lucide-react'
 
 export default function CommunityPage() {
@@ -144,7 +144,7 @@ export default function CommunityPage() {
                   <option value="">Choose a trip...</option>
                   {userTrips.map((trip) => (
                     <option key={trip.trip_id} value={trip.trip_id}>
-                      {trip.trip_name} ({new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()})
+                      {trip.trip_name} ({formatDateRange(trip.start_date, trip.end_date)})
                     </option>
                   ))}
                 </select>
@@ -210,7 +210,7 @@ export default function CommunityPage() {
                           {comment.user?.full_name || comment.user?.email?.split('@')[0] || 'Anonymous'}
                         </h3>
                         <p className="text-sm text-gray-500">
-                          {format(new Date(comment.created_at), 'MMM d, yyyy')}
+                          {formatDateDDMMYYYY(comment.created_at)}
                         </p>
                       </div>
                     </div>
@@ -234,14 +234,14 @@ export default function CommunityPage() {
                         <Calendar className="w-4 h-4" />
                         {comment.trip?.start_date && comment.trip?.end_date && (
                           <>
-                            {format(new Date(comment.trip.start_date), 'MMM d')} - {format(new Date(comment.trip.end_date), 'MMM d, yyyy')}
+                            {formatDateRange(comment.trip.start_date, comment.trip.end_date)}
                           </>
                         )}
                       </span>
                       {comment.trip?.estimated_cost && (
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-4 h-4" />
-                          ${comment.trip.estimated_cost.toFixed(2)}
+                          ₹{comment.trip.estimated_cost.toFixed(2)}
                         </span>
                       )}
                     </div>
@@ -298,19 +298,19 @@ export default function CommunityPage() {
                                   </div>
                                   {section.price && (
                                     <p className="text-green-600 font-semibold">
-                                      ${section.price.toFixed(2)} {section.currency_code || 'USD'}
+                                      ₹{section.price.toFixed(2)} {section.currency_code || 'INR'}
                                     </p>
                                   )}
                                   {section.is_date_range ? (
                                     section.date_start && section.date_end && (
                                       <p className="text-sm text-gray-600">
-                                        {format(new Date(section.date_start), 'MMM d')} - {format(new Date(section.date_end), 'MMM d, yyyy')}
+                                        {formatDateRange(section.date_start, section.date_end)}
                                       </p>
                                     )
                                   ) : (
                                     section.date_single && (
                                       <p className="text-sm text-gray-600">
-                                        {format(new Date(section.date_single), 'MMM d, yyyy')}
+                                        {formatDateDDMMYYYY(section.date_single)}
                                       </p>
                                     )
                                   )}
@@ -325,12 +325,12 @@ export default function CommunityPage() {
                                   </h5>
                                   {section.price && (
                                     <p className="text-green-600 font-semibold">
-                                      ${section.price.toFixed(2)} {section.currency_code || 'USD'}
+                                      ₹{section.price.toFixed(2)} {section.currency_code || 'INR'}
                                     </p>
                                   )}
                                   {section.date_single && (
                                     <p className="text-sm text-gray-600">
-                                      {format(new Date(section.date_single), 'MMM d, yyyy')}
+                                      {formatDateDDMMYYYY(section.date_single)}
                                     </p>
                                   )}
                                 </div>
@@ -344,24 +344,24 @@ export default function CommunityPage() {
                                   </h5>
                                   {section.price_per_night && (
                                     <p className="text-sm text-gray-600">
-                                      ${section.price_per_night.toFixed(2)} {section.currency_code || 'USD'} per night
+                                      ₹{section.price_per_night.toFixed(2)} {section.currency_code || 'INR'} per night
                                     </p>
                                   )}
                                   {section.price && (
                                     <p className="text-green-600 font-semibold">
-                                      Total: ${section.price.toFixed(2)} {section.currency_code || 'USD'}
+                                      Total: ₹{section.price.toFixed(2)} {section.currency_code || 'INR'}
                                     </p>
                                   )}
                                   {section.is_date_range ? (
                                     section.date_start && section.date_end && (
                                       <p className="text-sm text-gray-600">
-                                        {format(new Date(section.date_start), 'MMM d')} - {format(new Date(section.date_end), 'MMM d, yyyy')}
+                                        {formatDateRange(section.date_start, section.date_end)}
                                       </p>
                                     )
                                   ) : (
                                     section.date_single && (
                                       <p className="text-sm text-gray-600">
-                                        {format(new Date(section.date_single), 'MMM d, yyyy')}
+                                        {formatDateDDMMYYYY(section.date_single)}
                                       </p>
                                     )
                                   )}

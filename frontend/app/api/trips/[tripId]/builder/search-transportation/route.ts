@@ -31,6 +31,8 @@ export async function POST(
     // Create a very specific prompt that requires strict JSON output
     const userQuery = `Search for transportation options from "${from}" to "${to}". 
 
+IMPORTANT: All prices MUST be in Indian Rupees (INR). Use ₹ symbol or "INR" currency code. Convert any USD prices to INR (approximate conversion: 1 USD ≈ 83 INR).
+
 You MUST return ONLY valid JSON in this exact format (no additional text, no markdown, just pure JSON):
 
 {
@@ -39,18 +41,18 @@ You MUST return ONLY valid JSON in this exact format (no additional text, no mar
   "transportation_options": [
     {
       "mode": "flight",
-      "price": "$XXX",
+      "price": "₹XXX",
       "price_numeric": XXX,
-      "currency": "USD",
+      "currency": "INR",
       "source_url": "https://example.com",
       "duration": "X hours",
       "provider": "Airline Name"
     },
     {
       "mode": "train",
-      "price": "$XXX",
+      "price": "₹XXX",
       "price_numeric": XXX,
-      "currency": "USD",
+      "currency": "INR",
       "source_url": "https://example.com",
       "duration": "X hours",
       "provider": "Train Company"
@@ -60,9 +62,9 @@ You MUST return ONLY valid JSON in this exact format (no additional text, no mar
 
 Include all available modes: flight, train, bus, car rental, etc. For each option, provide:
 - mode: the transportation type
-- price: formatted price string
-- price_numeric: numeric price value
-- currency: currency code
+- price: formatted price string in INR (use ₹ symbol)
+- price_numeric: numeric price value in INR
+- currency: MUST be "INR" (Indian Rupees)
 - source_url: the exact URL where you found this price
 - duration: estimated travel time
 - provider: company/service name

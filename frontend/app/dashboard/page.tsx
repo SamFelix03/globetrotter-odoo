@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MapPin, Calendar, DollarSign, Plus, ArrowRight, Globe } from 'lucide-react'
+import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -309,13 +310,13 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4 text-gray-400" />
                         <span>
-                          {new Date(trip.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(trip.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {formatDateRange(trip.start_date, trip.end_date)}
                         </span>
                       </div>
                       {trip.estimated_cost && (
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <DollarSign className="w-4 h-4 text-gray-400" />
-                          <span className="font-semibold text-gray-900">${trip.estimated_cost.toFixed(2)}</span>
+                          <span className="font-semibold text-gray-900">₹{trip.estimated_cost.toFixed(2)}</span>
                         </div>
                       )}
                     </div>

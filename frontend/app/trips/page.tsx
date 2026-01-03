@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import ConfirmModal from '@/components/ConfirmModal'
+import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 
 export default function TripsPage() {
   const router = useRouter()
@@ -111,7 +112,7 @@ export default function TripsPage() {
                     {trip.trip_name}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}
+                    {formatDateRange(trip.start_date, trip.end_date)}
                   </p>
                   {trip.trip_description && (
                     <p className="text-sm text-gray-500 mb-4 line-clamp-2">
@@ -120,7 +121,7 @@ export default function TripsPage() {
                   )}
                   {trip.estimated_cost && (
                     <p className="text-sm font-medium text-gray-900 mb-4">
-                      Estimated: ${trip.estimated_cost.toFixed(2)}
+                      Estimated: ₹{trip.estimated_cost.toFixed(2)}
                     </p>
                   )}
                   <div className="flex gap-2">

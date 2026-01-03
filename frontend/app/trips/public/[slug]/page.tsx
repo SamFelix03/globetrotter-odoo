@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import { formatDateDDMMYYYY, formatDateRange } from '@/lib/dateUtils'
 
 export default function PublicTripPage() {
   const params = useParams()
@@ -85,10 +86,10 @@ export default function PublicTripPage() {
           )}
           <div className="flex gap-6 text-sm text-gray-600">
             <span>
-              {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}
+              {formatDateRange(trip.start_date, trip.end_date)}
             </span>
             {trip.estimated_cost && (
-              <span>Estimated: ${trip.estimated_cost.toFixed(2)}</span>
+              <span>Estimated: ₹{trip.estimated_cost.toFixed(2)}</span>
             )}
             <span>{trip.view_count || 0} views</span>
           </div>
@@ -101,7 +102,7 @@ export default function PublicTripPage() {
                 {stop.cities?.city_name}, {stop.cities?.country}
               </h2>
               <p className="text-sm text-gray-600 mb-4">
-                {new Date(stop.arrival_date).toLocaleDateString()} - {new Date(stop.departure_date).toLocaleDateString()}
+                {formatDateRange(stop.arrival_date, stop.departure_date)}
               </p>
 
               {stop.itinerary_days && stop.itinerary_days.length > 0 && (
@@ -109,7 +110,7 @@ export default function PublicTripPage() {
                   {stop.itinerary_days.map((day: any) => (
                     <div key={day.day_id} className="border-l-2 border-green-800 pl-4">
                       <h3 className="font-semibold text-gray-900">
-                        Day {day.day_number} - {new Date(day.day_date).toLocaleDateString()}
+                        Day {day.day_number} - {formatDateDDMMYYYY(day.day_date)}
                       </h3>
                       {day.itinerary_activities && day.itinerary_activities.length > 0 && (
                         <div className="mt-2 space-y-2">

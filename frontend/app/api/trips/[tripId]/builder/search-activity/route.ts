@@ -31,15 +31,17 @@ export async function POST(
     // Build price range filter text
     let priceFilterText = ''
     if (minPrice && maxPrice) {
-      priceFilterText = ` within the price range of $${minPrice} to $${maxPrice}`
+      priceFilterText = ` within the price range of ₹${minPrice} to ₹${maxPrice}`
     } else if (minPrice) {
-      priceFilterText = ` with a minimum price of $${minPrice}`
+      priceFilterText = ` with a minimum price of ₹${minPrice}`
     } else if (maxPrice) {
-      priceFilterText = ` with a maximum price of $${maxPrice}`
+      priceFilterText = ` with a maximum price of ₹${maxPrice}`
     }
 
     // Create a very specific prompt that requires strict JSON output
     const userQuery = `Search for activities in "${place}" related to the theme "${theme}"${priceFilterText}. 
+
+IMPORTANT: All prices MUST be in Indian Rupees (INR). Use ₹ symbol or "INR" currency code. Convert any USD prices to INR (approximate conversion: 1 USD ≈ 83 INR).
 
 Examples:
 - If theme is "lunch", find restaurants, cafes, or dining places
@@ -48,7 +50,7 @@ Examples:
 - If theme is "nightlife", find bars, clubs, entertainment venues
 - If theme is "shopping", find shopping areas, markets, stores
 
-${priceFilterText ? `IMPORTANT: Only include activities that fall within the specified price range.` : ''}
+${priceFilterText ? `IMPORTANT: Only include activities that fall within the specified price range in INR.` : ''}
 
 You MUST return ONLY valid JSON in this exact format (no additional text, no markdown, just pure JSON):
 
@@ -58,9 +60,9 @@ You MUST return ONLY valid JSON in this exact format (no additional text, no mar
   "activities": [
     {
       "activity_name": "Restaurant Name",
-      "price": "$XXX",
+      "price": "₹XXX",
       "price_numeric": XXX,
-      "currency": "USD",
+      "currency": "INR",
       "source_url": "https://example.com",
       "description": "Brief description of the activity",
       "category": "restaurant",
@@ -69,9 +71,9 @@ You MUST return ONLY valid JSON in this exact format (no additional text, no mar
     },
     {
       "activity_name": "Another Activity",
-      "price": "$XXX",
+      "price": "₹XXX",
       "price_numeric": XXX,
-      "currency": "USD",
+      "currency": "INR",
       "source_url": "https://example.com",
       "description": "Brief description",
       "category": "activity_type",
@@ -83,9 +85,9 @@ You MUST return ONLY valid JSON in this exact format (no additional text, no mar
 
 For each activity, provide:
 - activity_name: the name of the activity/venue
-- price: formatted price string (e.g., "$50", "$20-30", "Free")
-- price_numeric: numeric price value (use 0 for free, average for ranges)
-- currency: currency code
+- price: formatted price string in INR (e.g., "₹500", "₹200-300", "Free")
+- price_numeric: numeric price value in INR (use 0 for free, average for ranges)
+- currency: MUST be "INR" (Indian Rupees)
 - source_url: the exact URL where you found this information
 - description: brief description of what the activity is
 - category: type of activity (restaurant, museum, tour, etc.)

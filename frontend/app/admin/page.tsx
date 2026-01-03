@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { formatDateDDMMYYYY } from '@/lib/dateUtils'
 
 export default function AdminPage() {
   const [analytics, setAnalytics] = useState<any>(null)
@@ -110,7 +111,7 @@ export default function AdminPage() {
                 <div key={trip.trip_id}>
                   <div className="font-medium text-gray-900">{trip.trip_name}</div>
                   <div className="text-sm text-gray-600">
-                    by {trip.users?.full_name || 'Unknown'} • {new Date(trip.created_at).toLocaleDateString()}
+                    by {trip.users?.full_name || 'Unknown'} • {formatDateDDMMYYYY(trip.created_at)}
                   </div>
                 </div>
               ))}

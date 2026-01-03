@@ -134,7 +134,7 @@ export default function CreateTripPage() {
 
           <div>
             <label htmlFor="total_budget" className="block text-sm font-medium text-gray-700">
-              Total Budget (USD)
+              Total Budget (INR)
             </label>
             <input
               type="number"

@@ -218,7 +218,7 @@ export default function BuilderSearchPage() {
           )}
           {price && (
             <div className="mb-2 text-sm text-gray-600">
-              <span className="font-medium">Price:</span> ${price}
+              <span className="font-medium">Price:</span> ₹{price}
             </div>
           )}
           {dateRange && (

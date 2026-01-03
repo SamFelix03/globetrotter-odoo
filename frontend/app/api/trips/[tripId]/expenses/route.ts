@@ -73,7 +73,7 @@ export async function POST(
         day_id: day_id || null,
         expense_category_id: expense_category_id || null,
         amount,
-        currency_code: currency_code || 'USD',
+        currency_code: currency_code || 'INR',
         description: description || null,
         expense_date: expense_date || null,
         is_estimated: is_estimated !== undefined ? is_estimated : true,
