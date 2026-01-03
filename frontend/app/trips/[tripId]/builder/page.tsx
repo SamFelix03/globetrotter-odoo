@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { formatDateDDMMYYYY } from '@/lib/dateUtils'
+import AISearchModal from '@/components/AISearchModal'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Plus, X } from 'lucide-react'
 
 export default function ItineraryBuilderPage() {
   const params = useParams()
@@ -50,6 +60,7 @@ export default function ItineraryBuilderPage() {
   const [nextFormId, setNextFormId] = useState(getInitialNextFormId)
   const [saving, setSaving] = useState(false)
   const [savedSections, setSavedSections] = useState<any[]>([])
+  const [newlyAddedSectionId, setNewlyAddedSectionId] = useState<number | null>(null)
 
   // Save form IDs to cache whenever they change
   useEffect(() => {
@@ -231,54 +242,93 @@ export default function ItineraryBuilderPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Itinerary Builder: {trip?.trip_name}
           </h1>
-          <button
-            onClick={() => {
-              const newId = nextFormId
-              setSectionFormIds([...sectionFormIds, newId])
-              setNextFormId(newId + 1)
-            }}
-            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
-          >
-            + Add Section
-          </button>
         </div>
 
-        {sectionFormIds.map((formId, index) => (
-          <div key={formId} className="mb-8">
-            <SectionForm
-              formId={formId}
-              tripId={tripId}
-              onClose={() => {
-                // Clear cache when closing
-                const cacheKey = `sectionForm_${tripId}_${formId}`
-                localStorage.removeItem(cacheKey)
-                const newIds = sectionFormIds.filter(id => id !== formId)
-                setSectionFormIds(newIds)
-              }}
-            />
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={handleSaveAllSections}
-                disabled={saving}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? 'Saving...' : 'Save Trip'}
-              </button>
-              <button
-                onClick={() => {
-                  const insertIndex = sectionFormIds.indexOf(formId) + 1
-                  const newIds = [...sectionFormIds]
-                  newIds.splice(insertIndex, 0, nextFormId)
-                  setSectionFormIds(newIds)
-                  setNextFormId(nextFormId + 1)
-                }}
-                className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
-              >
-                + Add Section
-              </button>
+        {/* Sections with chain UI */}
+        <div className="space-y-0">
+          {sectionFormIds.length === 0 ? (
+            <div className="bg-white rounded-lg shadow p-12 text-center mb-8">
+              <div className="max-w-md mx-auto">
+                <div className="text-6xl mb-4">🗺️</div>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Start Building Your Itinerary
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Add your first section to begin planning your trip
+                </p>
+                <Button
+                  onClick={() => {
+                    const newId = nextFormId
+                    setSectionFormIds([...sectionFormIds, newId])
+                    setNextFormId(newId + 1)
+                    setNewlyAddedSectionId(newId)
+                    setTimeout(() => setNewlyAddedSectionId(null), 2000)
+                  }}
+                  className="px-8 py-6 text-lg font-semibold bg-green-800 hover:bg-green-900"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add Your First Section
+                </Button>
+              </div>
             </div>
+          ) : (
+            sectionFormIds.map((formId, index) => (
+              <div 
+                key={formId} 
+                className={`relative ${newlyAddedSectionId === formId ? 'animate-in fade-in slide-in-from-bottom-4 duration-500' : ''}`}
+              >
+                {/* Section Form */}
+                <div className={`relative mb-0 ${newlyAddedSectionId === formId ? 'ring-4 ring-green-400 ring-opacity-50 rounded-lg' : ''}`}>
+                  <SectionForm
+                    formId={formId}
+                    tripId={tripId}
+                    sectionNumber={index + 1}
+                    onClose={() => {
+                      // Clear cache when closing
+                      const cacheKey = `sectionForm_${tripId}_${formId}`
+                      localStorage.removeItem(cacheKey)
+                      const newIds = sectionFormIds.filter(id => id !== formId)
+                      setSectionFormIds(newIds)
+                    }}
+                  />
+                </div>
+
+                {/* Add Section Button - below each section */}
+                <div className="flex items-center justify-center my-6">
+                  <button
+                    onClick={() => {
+                      const insertIndex = index + 1
+                      const newId = nextFormId
+                      const newIds = [...sectionFormIds]
+                      newIds.splice(insertIndex, 0, newId)
+                      setSectionFormIds(newIds)
+                      setNextFormId(newId + 1)
+                      setNewlyAddedSectionId(newId)
+                      setTimeout(() => setNewlyAddedSectionId(null), 2000)
+                    }}
+                    className="w-10 h-10 rounded-full bg-green-800 hover:bg-green-900 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all border-2 border-white"
+                    title="Add section here"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Save Trip Button at the end */}
+        {sectionFormIds.length > 0 && (
+          <div className="mt-8 flex justify-center">
+            <Button
+              onClick={handleSaveAllSections}
+              disabled={saving}
+              className="px-8 py-6 text-lg font-semibold bg-green-800 hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? 'Saving...' : 'Save Trip'}
+            </Button>
           </div>
-        ))}
+        )}
 
         <div className="space-y-6">
           {stops.map((stop, index) => (
@@ -295,7 +345,7 @@ export default function ItineraryBuilderPage() {
   )
 }
 
-function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: string; onClose: () => void }) {
+function SectionForm({ formId, tripId, sectionNumber, onClose }: { formId: number; tripId: string; sectionNumber: number; onClose: () => void }) {
   const router = useRouter()
   const cacheKey = `sectionForm_${tripId}_${formId}`
 
@@ -309,7 +359,12 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
     return diffDays > 0 ? diffDays : 0
   }
 
+  // Phase management
+  const [currentPhase, setCurrentPhase] = useState(1) // 1: Category, 2: Manual/AI choice, 3: Form
   const [selectedCategory, setSelectedCategory] = useState<'travel' | 'activity' | 'stay' | null>(null)
+  const [entryMethod, setEntryMethod] = useState<'manual' | 'ai' | null>(null) // 'manual' or 'ai'
+  const [showAIModal, setShowAIModal] = useState(false)
+  
   const [place, setPlace] = useState('')
   const [price, setPrice] = useState('')
   const [dateRange, setDateRange] = useState('')
@@ -333,6 +388,8 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
       if (cached) {
         const data = JSON.parse(cached)
         setSelectedCategory(data.selectedCategory || null)
+        setEntryMethod(data.entryMethod || null)
+        setCurrentPhase(data.currentPhase || 1)
         setPlace(data.place || '')
         setPrice(data.price || '')
         setDateRange(data.dateRange || '')
@@ -359,7 +416,9 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
     if (typeof window === 'undefined' || !isLoaded) return
 
     const formData = {
+      currentPhase,
       selectedCategory,
+      entryMethod,
       place,
       price,
       dateRange,
@@ -376,7 +435,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
     } catch (error) {
       console.error('Error saving form data to cache:', error)
     }
-  }, [selectedCategory, place, price, dateRange, isDateRange, startDate, endDate, fromLocation, toLocation, selectedTransportMode, cacheKey, isLoaded])
+  }, [currentPhase, selectedCategory, entryMethod, place, price, dateRange, isDateRange, startDate, endDate, fromLocation, toLocation, selectedTransportMode, cacheKey, isLoaded, pricePerNight])
 
   const categories = [
     { id: 'travel', name: 'Travel', icon: '✈️' },
@@ -384,55 +443,163 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
     { id: 'stay', name: 'Stay', icon: '🏨' },
   ]
 
-  const handleSearch = () => {
+  const handleCategorySelect = (category: 'travel' | 'activity' | 'stay') => {
+    setSelectedCategory(category)
+    setCurrentPhase(2)
+  }
+
+  const handleEntryMethodSelect = (method: 'manual' | 'ai') => {
+    setEntryMethod(method)
+    if (method === 'ai') {
+      setShowAIModal(true)
+    } else {
+      setCurrentPhase(3)
+    }
+  }
+
+  const handleAISelectOption = (option: any) => {
     if (!selectedCategory) return
 
-    // Navigate to search page with query parameters
-    const params = new URLSearchParams({
-      tripId,
-      formId: formId.toString(),
-      category: selectedCategory,
-      place,
-      price: price || '',
-      dateRange: isDateRange ? `${startDate}|${endDate}` : dateRange || '',
-      from: fromLocation || '',
-      to: toLocation || '',
-      transportMode: selectedTransportMode || '',
-    })
-    router.push(`/trips/${tripId}/builder/search?${params.toString()}`)
+    // Fill form based on selected option
+    if (selectedCategory === 'travel') {
+      setFromLocation(fromLocation || '')
+      setToLocation(toLocation || '')
+      setSelectedTransportMode(option.mode)
+      setPrice(option.price_numeric?.toString() || '')
+      setPlace(`${fromLocation || ''} to ${toLocation || ''} (${option.mode})`)
+    } else if (selectedCategory === 'activity') {
+      setPlace(option.activity_name)
+      setPrice(option.price_numeric?.toString() || '')
+    } else if (selectedCategory === 'stay') {
+      setPlace(option.hotel_name)
+      const pricePerNight = option.price_numeric
+      setPricePerNight(pricePerNight)
+      
+      // Calculate total price based on date range
+      let totalPrice = pricePerNight
+      if (isDateRange && startDate && endDate) {
+        const start = new Date(startDate)
+        const end = new Date(endDate)
+        const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+        if (nights > 0) {
+          totalPrice = pricePerNight * nights
+        }
+      }
+      setPrice(totalPrice.toFixed(2))
+    }
+
+    setShowAIModal(false)
+    setCurrentPhase(3)
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 relative">
-      <h2 className="text-xl font-semibold mb-4 text-gray-900">Add Section</h2>
-
-      {/* Category Selection */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Select Category
-        </label>
-        <div className="grid grid-cols-3 gap-3">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id as 'travel' | 'activity' | 'stay')}
-              className={`p-4 rounded-lg border-2 transition-all text-center ${selectedCategory === category.id
-                ? 'border-green-800 bg-green-50 dark:bg-blue-900/20'
-                : 'border-gray-300 hover:border-green-300 dark:hover:border-green-800'
-                }`}
-            >
-              <div className="text-2xl mb-1">{category.icon}</div>
-              <div className="text-sm font-semibold text-gray-900">
-                {category.name}
+    <>
+      <Card className="shadow-lg relative">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <CardTitle className="text-2xl font-bold text-gray-900">Section {sectionNumber}</CardTitle>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center min-h-[400px]">
+          {/* Phase 1: Category Selection */}
+          {currentPhase === 1 && (
+            <div className="w-full max-w-2xl space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+              <div className="text-center mb-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Select Category</h3>
+                <p className="text-gray-600">Choose the type of section you want to add</p>
               </div>
-            </button>
-          ))}
-        </div>
-      </div>
+              <div className="grid grid-cols-3 gap-4">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategorySelect(category.id as 'travel' | 'activity' | 'stay')}
+                    className="p-8 rounded-xl border-2 border-gray-200 hover:border-green-800 transition-all text-center hover:shadow-lg group"
+                  >
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{category.icon}</div>
+                    <div className="text-base font-semibold text-gray-900">
+                      {category.name}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Form Fields - Only show after category is selected */}
-      {selectedCategory && (
-        <div className="space-y-4 mb-6">
+          {/* Phase 2: Manual or AI Choice */}
+          {currentPhase === 2 && selectedCategory && (
+            <div className="w-full max-w-2xl space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+              <div className="text-center mb-8">
+                <div className="text-4xl mb-4">
+                  {categories.find(c => c.id === selectedCategory)?.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  How would you like to add {categories.find(c => c.id === selectedCategory)?.name}?
+                </h3>
+                <p className="text-gray-600">Choose your preferred method</p>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+                <button
+                  onClick={() => handleEntryMethodSelect('manual')}
+                  className="p-8 rounded-xl border-2 border-gray-200 hover:border-green-800 transition-all text-center hover:shadow-lg group"
+                >
+                  <div className="text-3xl mb-3">✏️</div>
+                  <div className="text-lg font-semibold text-gray-900 mb-2">Enter Details Manually</div>
+                  <div className="text-sm text-gray-600">Fill in the form yourself</div>
+                </button>
+                <button
+                  onClick={() => handleEntryMethodSelect('ai')}
+                  className="p-8 rounded-xl border-2 border-green-800 bg-green-50 hover:bg-green-100 transition-all text-center hover:shadow-lg group relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-green-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative text-3xl mb-3">✨</div>
+                  <div className="relative text-lg font-semibold text-green-900 mb-2">Search with AI</div>
+                  <div className="relative text-sm text-green-700">Let AI find the best options</div>
+                </button>
+              </div>
+              <div className="flex justify-center pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setCurrentPhase(1)
+                    setSelectedCategory(null)
+                  }}
+                >
+                  Back
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Phase 3: Form Fields */}
+          {currentPhase === 3 && selectedCategory && (
+            <div className="w-full max-w-3xl space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {categories.find(c => c.id === selectedCategory)?.name} Details
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {entryMethod === 'ai' ? 'AI-selected option (you can edit)' : 'Enter the details manually'}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setCurrentPhase(2)
+                    setEntryMethod(null)
+                  }}
+                >
+                  Back
+                </Button>
+              </div>
+
+              <div className="space-y-4">
           {/* Travel-specific fields */}
           {selectedCategory === 'travel' && (
             <>
@@ -663,26 +830,45 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
               )}
             </div>
           )}
-        </div>
-      )}
+              </div>
 
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-        {selectedCategory && (
-          <button
-            onClick={handleSearch}
-            className="px-4 py-2 bg-green-800 text-white rounded-md hover:bg-green-900"
-          >
-            Search
-          </button>
-        )}
-      </div>
-    </div>
+              <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+                <Button
+                  variant="outline"
+                  onClick={onClose}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* AI Search Modal */}
+      {selectedCategory && (
+        <AISearchModal
+          isOpen={showAIModal}
+          onClose={() => {
+            setShowAIModal(false)
+            if (currentPhase === 2) {
+              setEntryMethod(null)
+            }
+          }}
+          category={selectedCategory as 'travel' | 'activity' | 'stay'}
+          tripId={tripId}
+          onSelectOption={handleAISelectOption}
+          initialData={{
+            place,
+            price,
+            dateRange: isDateRange ? `${startDate}|${endDate}` : dateRange,
+            from: fromLocation,
+            to: toLocation,
+            transportMode: selectedTransportMode,
+          }}
+        />
+      )}
+    </>
   )
 }
 

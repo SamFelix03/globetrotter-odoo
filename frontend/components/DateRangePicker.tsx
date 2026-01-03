@@ -48,11 +48,6 @@ export default function DateRangePicker({
 
   return (
     <div className={className}>
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {label} {required && '*'}
-        </label>
-      )}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <div className="[&_.MuiOutlinedInput-root]:bg-white [&_.MuiInputBase-input]:text-gray-900">
           <MUIDateRangePicker
@@ -61,6 +56,7 @@ export default function DateRangePicker({
             slotProps={{
               textField: {
                 size: 'small',
+                required,
                 sx: {
                   '& .MuiOutlinedInput-root': {
                     backgroundColor: 'white',

@@ -159,7 +159,7 @@ export default function SignupPage() {
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="full-name">Full Name (optional)</FieldLabel>
+                  <FieldLabel htmlFor="full-name">Name</FieldLabel>
                   <Input
                     id="full-name"
                     name="full-name"
