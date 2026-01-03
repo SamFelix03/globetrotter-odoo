@@ -353,8 +353,24 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
             </>
           )}
 
-          {/* Common fields - show Place for non-travel, or show it for travel too */}
-          {selectedCategory !== 'travel' && (
+          {/* Activity-specific field */}
+          {selectedCategory === 'activity' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Activity Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter activity name"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                value={place}
+                onChange={(e) => setPlace(e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Stay category - show Place */}
+          {selectedCategory === 'stay' && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Place
@@ -407,8 +423,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
         {selectedCategory && (
           <button
             onClick={handleSearch}
-            disabled={selectedCategory !== 'travel' && !place}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             Search
           </button>

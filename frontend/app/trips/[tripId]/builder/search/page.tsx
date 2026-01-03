@@ -25,6 +25,9 @@ export default function BuilderSearchPage() {
   const [startDate, setStartDate] = useState(dateRange.includes('|') ? dateRange.split('|')[0] : '')
   const [endDate, setEndDate] = useState(dateRange.includes('|') ? dateRange.split('|')[1] : '')
   const [singleDate, setSingleDate] = useState(dateRange.includes('|') ? '' : dateRange)
+  // Activity-specific fields
+  const [activityPlace, setActivityPlace] = useState('')
+  const [activityTheme, setActivityTheme] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<any>(null)
   const [error, setError] = useState('')
@@ -38,24 +41,39 @@ export default function BuilderSearchPage() {
   const selectedCategory = categories.find(c => c.id === category)
 
   const handleSearch = async () => {
-    if (category !== 'travel') {
-      return
-    }
-
-    if (!from || !to) {
-      setError('Please enter both From and To locations to search')
-      return
-    }
-
     setIsSearching(true)
     setError('')
 
     try {
-      const res = await fetch(`/api/trips/${tripId}/builder/search-transportation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from, to }),
-      })
+      let res
+      let requestBody
+
+      if (category === 'travel') {
+        if (!from || !to) {
+          setError('Please enter both From and To locations to search')
+          setIsSearching(false)
+          return
+        }
+        res = await fetch(`/api/trips/${tripId}/builder/search-transportation`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from, to }),
+        })
+      } else if (category === 'activity') {
+        if (!activityPlace || !activityTheme) {
+          setError('Please enter both Place and Theme to search')
+          setIsSearching(false)
+          return
+        }
+        res = await fetch(`/api/trips/${tripId}/builder/search-activity`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place: activityPlace, theme: activityTheme }),
+        })
+      } else {
+        setIsSearching(false)
+        return
+      }
 
       const data = await res.json()
 
@@ -81,12 +99,18 @@ export default function BuilderSearchPage() {
         const cached = localStorage.getItem(cacheKey)
         const formData = cached ? JSON.parse(cached) : {}
         
-        // Update form data with selected option
-        formData.fromLocation = from
-        formData.toLocation = to
-        formData.selectedTransportMode = option.mode
-        formData.price = option.price_numeric.toString()
-        formData.place = `${from} to ${to} (${option.mode})`
+        if (category === 'travel') {
+          // Update form data with selected transportation option
+          formData.fromLocation = from
+          formData.toLocation = to
+          formData.selectedTransportMode = option.mode
+          formData.price = option.price_numeric.toString()
+          formData.place = `${from} to ${to} (${option.mode})`
+        } else if (category === 'activity') {
+          // Update form data with selected activity option
+          formData.place = option.activity_name
+          formData.price = option.price_numeric.toString()
+        }
         
         // Update date fields
         if (isDateRange) {
@@ -297,7 +321,7 @@ export default function BuilderSearchPage() {
               </div>
             )}
 
-            {selectedCategory && category !== 'travel' && (
+            {selectedCategory && category !== 'travel' && category !== 'activity' && (
               <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Search functionality for {selectedCategory.name.toLowerCase()} will be implemented in the next step.
@@ -307,7 +331,119 @@ export default function BuilderSearchPage() {
           </div>
         )}
 
-        {selectedCategory && category !== 'travel' && (
+        {selectedCategory && category === 'activity' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Search Activity Options
+            </h2>
+            
+            <div className="space-y-4 mb-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Place
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter location/place name"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={activityPlace}
+                    onChange={(e) => setActivityPlace(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Theme
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., lunch, adventure, culture"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={activityTheme}
+                    onChange={(e) => setActivityTheme(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleSearch}
+                disabled={isSearching}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSearching ? 'Searching...' : 'Search Activities'}
+              </button>
+
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                  <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                </div>
+              )}
+            </div>
+
+            {searchResults && searchResults.activities && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                  Available Activities
+                </h3>
+                <div className="space-y-3">
+                  {searchResults.activities.map((activity: any, index: number) => (
+                    <div
+                      key={index}
+                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-600 transition-all cursor-pointer"
+                      onClick={() => handleSelectOption(activity)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            {activity.activity_name}
+                          </h4>
+                          {activity.description && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                              {activity.description}
+                            </p>
+                          )}
+                          {activity.category && (
+                            <span className="inline-block mt-2 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                              {activity.category}
+                            </span>
+                          )}
+                          {activity.rating && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              ⭐ {activity.rating}/5
+                            </p>
+                          )}
+                          {activity.address && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              📍 {activity.address}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right ml-4">
+                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                            {activity.price}
+                          </p>
+                        </div>
+                      </div>
+                      {activity.source_url && (
+                        <a
+                          href={activity.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          View source
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {selectedCategory && category !== 'travel' && category !== 'activity' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
               Search Results for {selectedCategory.name}
