@@ -3,9 +3,10 @@ import OpenAI from 'openai'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
+    const { tripId } = await params
     const body = await request.json()
     const { from, to } = body
 

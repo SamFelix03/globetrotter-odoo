@@ -3,11 +3,12 @@ import OpenAI from 'openai'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tripId: string } }
+  { params }: { params: Promise<{ tripId: string }> }
 ) {
   try {
+    const { tripId } = await params
     const body = await request.json()
-    const { place, theme } = body
+    const { place, theme, minPrice, maxPrice } = body
 
     if (!place || !theme) {
       return NextResponse.json(
@@ -27,8 +28,18 @@ export async function POST(
       apiKey: process.env.OPENAI_API_KEY,
     })
 
+    // Build price range filter text
+    let priceFilterText = ''
+    if (minPrice && maxPrice) {
+      priceFilterText = ` within the price range of $${minPrice} to $${maxPrice}`
+    } else if (minPrice) {
+      priceFilterText = ` with a minimum price of $${minPrice}`
+    } else if (maxPrice) {
+      priceFilterText = ` with a maximum price of $${maxPrice}`
+    }
+
     // Create a very specific prompt that requires strict JSON output
-    const userQuery = `Search for activities in "${place}" related to the theme "${theme}". 
+    const userQuery = `Search for activities in "${place}" related to the theme "${theme}"${priceFilterText}. 
 
 Examples:
 - If theme is "lunch", find restaurants, cafes, or dining places
@@ -36,6 +47,8 @@ Examples:
 - If theme is "culture", find museums, galleries, cultural sites
 - If theme is "nightlife", find bars, clubs, entertainment venues
 - If theme is "shopping", find shopping areas, markets, stores
+
+${priceFilterText ? `IMPORTANT: Only include activities that fall within the specified price range.` : ''}
 
 You MUST return ONLY valid JSON in this exact format (no additional text, no markdown, just pure JSON):
 

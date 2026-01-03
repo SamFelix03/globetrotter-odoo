@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import DateRangePicker from '@/components/DateRangePicker'
 
 export default function ItineraryBuilderPage() {
   const params = useParams()
@@ -48,6 +47,8 @@ export default function ItineraryBuilderPage() {
 
   const [sectionFormIds, setSectionFormIds] = useState<number[]>(getInitialFormIds)
   const [nextFormId, setNextFormId] = useState(getInitialNextFormId)
+  const [saving, setSaving] = useState(false)
+  const [savedSections, setSavedSections] = useState<any[]>([])
 
   // Save form IDs to cache whenever they change
   useEffect(() => {
@@ -56,6 +57,98 @@ export default function ItineraryBuilderPage() {
       localStorage.setItem(`nextFormId_${tripId}`, nextFormId.toString())
     }
   }, [sectionFormIds, nextFormId, tripId])
+
+  // Load saved sections on mount
+  useEffect(() => {
+    fetchSections()
+  }, [tripId])
+
+  const fetchSections = async () => {
+    try {
+      const res = await fetch(`/api/trips/${tripId}/sections`)
+      const data = await res.json()
+      if (data.sections) {
+        setSavedSections(data.sections)
+      }
+    } catch (error) {
+      console.error('Error fetching sections:', error)
+    }
+  }
+
+  const handleSaveAllSections = async () => {
+    setSaving(true)
+    try {
+      // Collect all section data from localStorage
+      const sections: any[] = []
+
+      for (const formId of sectionFormIds) {
+        const cacheKey = `sectionForm_${tripId}_${formId}`
+        const cached = localStorage.getItem(cacheKey)
+        if (cached) {
+          const formData = JSON.parse(cached)
+
+          // Only save if category is selected (section is started)
+          if (formData.selectedCategory) {
+            const section: any = {
+              category: formData.selectedCategory,
+              place: formData.place || null,
+              price: formData.price || null,
+              currency_code: 'USD',
+              is_date_range: formData.is_date_range || false,
+            }
+
+            // Date handling
+            if (formData.is_date_range) {
+              section.date_start = formData.startDate || null
+              section.date_end = formData.endDate || null
+              section.date_single = null
+            } else {
+              section.date_single = formData.dateRange || null
+              section.date_start = null
+              section.date_end = null
+            }
+
+            // Category-specific fields
+            if (formData.selectedCategory === 'travel') {
+              section.from_location = formData.fromLocation || null
+              section.to_location = formData.toLocation || null
+              section.transport_mode = formData.selectedTransportMode || null
+            } else if (formData.selectedCategory === 'activity') {
+              section.activity_theme = null // Could be stored in metadata if needed
+            } else if (formData.selectedCategory === 'stay') {
+              section.price_per_night = formData.pricePerNight || null
+            }
+
+            sections.push(section)
+          }
+        }
+      }
+
+      // Save all sections using bulk endpoint
+      const res = await fetch(`/api/trips/${tripId}/sections/bulk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        alert(`Error saving sections: ${data.error}`)
+        setSaving(false)
+        return
+      }
+
+      // Refresh saved sections
+      await fetchSections()
+      alert('Sections saved successfully!')
+      setSaving(false)
+    } catch (error: any) {
+      console.error('Error saving sections:', error)
+      alert(`Error saving sections: ${error.message}`)
+      setSaving(false)
+    }
+  }
 
   useEffect(() => {
     fetchTrip()
@@ -147,7 +240,14 @@ export default function ItineraryBuilderPage() {
                 setSectionFormIds(newIds)
               }}
             />
-            <div className="mt-4 flex justify-center">
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={handleSaveAllSections}
+                disabled={saving}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : 'Save Trip'}
+              </button>
               <button
                 onClick={() => {
                   const insertIndex = sectionFormIds.indexOf(formId) + 1
@@ -183,6 +283,16 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
   const router = useRouter()
   const cacheKey = `sectionForm_${tripId}_${formId}`
 
+  // Helper function to calculate nights between two dates
+  const calculateNights = (start: string, end: string): number => {
+    if (!start || !end) return 0
+    const startDate = new Date(start)
+    const endDate = new Date(end)
+    const diffTime = endDate.getTime() - startDate.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays > 0 ? diffDays : 0
+  }
+
   const [selectedCategory, setSelectedCategory] = useState<'travel' | 'activity' | 'stay' | null>(null)
   const [place, setPlace] = useState('')
   const [price, setPrice] = useState('')
@@ -195,6 +305,8 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
   const [fromLocation, setFromLocation] = useState('')
   const [toLocation, setToLocation] = useState('')
   const [selectedTransportMode, setSelectedTransportMode] = useState<string>('')
+  // Store price per night for Stay category to recalculate when dates change
+  const [pricePerNight, setPricePerNight] = useState<number | null>(null)
 
   // Load cached data on mount (client-side only)
   useEffect(() => {
@@ -214,6 +326,10 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
         setFromLocation(data.fromLocation || '')
         setToLocation(data.toLocation || '')
         setSelectedTransportMode(data.selectedTransportMode || '')
+        // Restore price per night for Stay category
+        if (data.pricePerNight && data.selectedCategory === 'stay') {
+          setPricePerNight(data.pricePerNight)
+        }
       }
       setIsLoaded(true)
     } catch (error) {
@@ -237,6 +353,7 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
       fromLocation,
       toLocation,
       selectedTransportMode,
+      pricePerNight: selectedCategory === 'stay' ? pricePerNight : null,
     }
     try {
       localStorage.setItem(cacheKey, JSON.stringify(formData))
@@ -394,22 +511,142 @@ function SectionForm({ formId, tripId, onClose }: { formId: number; tripId: stri
               placeholder="Enter price"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) => {
+                setPrice(e.target.value)
+                // For Stay category in single date mode, store as price per night
+                if (selectedCategory === 'stay' && !isDateRange) {
+                  const priceNum = parseFloat(e.target.value)
+                  if (!isNaN(priceNum)) {
+                    setPricePerNight(priceNum)
+                  }
+                }
+              }}
               min="0"
               step="0.01"
             />
           </div>
 
-          <DateRangePicker
-            startDate={startDate || ''}
-            endDate={endDate || ''}
-            onChange={(start, end) => {
-              setStartDate(start)
-              setEndDate(end)
-              setIsDateRange(true)
-            }}
-            label="Date Range"
-          />
+          {/* Date fields - different for Activity vs others */}
+          {selectedCategory === 'activity' ? (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Date
+              </label>
+              <input
+                type="date"
+                placeholder="Select date"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+              />
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Date / Date Range
+              </label>
+              <div className="mb-2">
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <input
+                    type="checkbox"
+                    checked={isDateRange}
+                    onChange={(e) => {
+                      const newIsDateRange = e.target.checked
+                      setIsDateRange(newIsDateRange)
+
+                      // For Stay category: handle price conversion when switching date range mode
+                      if (selectedCategory === 'stay' && price) {
+                        const priceNum = parseFloat(price)
+                        if (!isNaN(priceNum)) {
+                          if (newIsDateRange && !isDateRange) {
+                            // Switching from single date to date range
+                            // Store current price as price per night
+                            setPricePerNight(priceNum)
+                            if (startDate && endDate) {
+                              const start = new Date(startDate)
+                              const end = new Date(endDate)
+                              const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+                              if (nights > 0) {
+                                setPrice((priceNum * nights).toFixed(2))
+                              }
+                            }
+                          } else if (!newIsDateRange && isDateRange) {
+                            // Switching from date range to single date
+                            // Use stored price per night or calculate from current price
+                            if (pricePerNight) {
+                              setPrice(pricePerNight.toFixed(2))
+                            } else if (startDate && endDate) {
+                              const start = new Date(startDate)
+                              const end = new Date(endDate)
+                              const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+                              if (nights > 0) {
+                                setPrice((priceNum / nights).toFixed(2))
+                                setPricePerNight(priceNum / nights)
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }}
+                    className="rounded"
+                  />
+                  Use date range
+                </label>
+              </div>
+              {isDateRange ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="date"
+                    placeholder="Start Date"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value)
+                      // Recalculate price for Stay when dates change in date range mode
+                      if (selectedCategory === 'stay' && isDateRange && e.target.value && endDate) {
+                        const nights = calculateNights(e.target.value, endDate)
+                        if (nights > 0) {
+                          const perNight = pricePerNight || (price ? parseFloat(price) / (calculateNights(startDate, endDate) || 1) : 0)
+                          if (perNight > 0) {
+                            setPricePerNight(perNight)
+                            setPrice((perNight * nights).toFixed(2))
+                          }
+                        }
+                      }
+                    }}
+                  />
+                  <input
+                    type="date"
+                    placeholder="End Date"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={endDate}
+                    onChange={(e) => {
+                      setEndDate(e.target.value)
+                      // Recalculate price for Stay when dates change in date range mode
+                      if (selectedCategory === 'stay' && isDateRange && startDate && e.target.value) {
+                        const nights = calculateNights(startDate, e.target.value)
+                        if (nights > 0) {
+                          const perNight = pricePerNight || (price ? parseFloat(price) / (calculateNights(startDate, endDate) || 1) : 0)
+                          if (perNight > 0) {
+                            setPricePerNight(perNight)
+                            setPrice((perNight * nights).toFixed(2))
+                          }
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <input
+                  type="date"
+                  placeholder="Select date"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                  value={dateRange}
+                  onChange={(e) => setDateRange(e.target.value)}
+                />
+              )}
+            </div>
+          )}
         </div>
       )}
 

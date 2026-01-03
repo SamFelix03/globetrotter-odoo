@@ -28,6 +28,12 @@ export default function BuilderSearchPage() {
   // Activity-specific fields
   const [activityPlace, setActivityPlace] = useState('')
   const [activityTheme, setActivityTheme] = useState('')
+  const [activityMinPrice, setActivityMinPrice] = useState('')
+  const [activityMaxPrice, setActivityMaxPrice] = useState('')
+  // Stay-specific fields
+  const [stayLocation, setStayLocation] = useState('')
+  const [stayMinPrice, setStayMinPrice] = useState('')
+  const [stayMaxPrice, setStayMaxPrice] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<any>(null)
   const [error, setError] = useState('')
@@ -68,7 +74,31 @@ export default function BuilderSearchPage() {
         res = await fetch(`/api/trips/${tripId}/builder/search-activity`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ place: activityPlace, theme: activityTheme }),
+          body: JSON.stringify({ 
+            place: activityPlace, 
+            theme: activityTheme,
+            minPrice: activityMinPrice ? parseFloat(activityMinPrice) : null,
+            maxPrice: activityMaxPrice ? parseFloat(activityMaxPrice) : null,
+          }),
+        })
+      } else if (category === 'stay') {
+        if (!stayLocation) {
+          setError('Please enter Location to search')
+          setIsSearching(false)
+          return
+        }
+        const dateRangeValue = isDateRange 
+          ? `${startDate}|${endDate}` 
+          : singleDate || ''
+        res = await fetch(`/api/trips/${tripId}/builder/search-stay`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            location: stayLocation,
+            minPrice: stayMinPrice ? parseFloat(stayMinPrice) : null,
+            maxPrice: stayMaxPrice ? parseFloat(stayMaxPrice) : null,
+            dateRange: dateRangeValue,
+          }),
         })
       } else {
         setIsSearching(false)
@@ -110,6 +140,26 @@ export default function BuilderSearchPage() {
           // Update form data with selected activity option
           formData.place = option.activity_name
           formData.price = option.price_numeric.toString()
+        } else if (category === 'stay') {
+          // Update form data with selected hotel option
+          formData.place = option.hotel_name
+          
+          // Store price per night for recalculation
+          const pricePerNight = option.price_numeric
+          
+          // Calculate total price based on date range
+          let totalPrice = pricePerNight
+          if (isDateRange && startDate && endDate) {
+            const start = new Date(startDate)
+            const end = new Date(endDate)
+            const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+            if (nights > 0) {
+              totalPrice = pricePerNight * nights
+            }
+          }
+          formData.price = totalPrice.toFixed(2)
+          // Store price per night in a way that can be retrieved (we'll use a separate cache key or store in formData)
+          formData.pricePerNight = pricePerNight
         }
         
         // Update date fields
@@ -365,6 +415,32 @@ export default function BuilderSearchPage() {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Price Range (Optional)
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="number"
+                    placeholder="Min price"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={activityMinPrice}
+                    onChange={(e) => setActivityMinPrice(e.target.value)}
+                    min="0"
+                    step="0.01"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max price"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={activityMaxPrice}
+                    onChange={(e) => setActivityMaxPrice(e.target.value)}
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
               <button
                 onClick={handleSearch}
                 disabled={isSearching}
@@ -443,16 +519,180 @@ export default function BuilderSearchPage() {
           </div>
         )}
 
-        {selectedCategory && category !== 'travel' && category !== 'activity' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">
-              Search Results for {selectedCategory.name}
+        {selectedCategory && category === 'stay' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Search Hotel Options
             </h2>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">
-                Search functionality for {selectedCategory.name.toLowerCase()} will be implemented in the next step.
-              </p>
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter city or location name"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                  value={stayLocation}
+                  onChange={(e) => setStayLocation(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Price Range per Night (Optional)
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="number"
+                    placeholder="Min price per night"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={stayMinPrice}
+                    onChange={(e) => setStayMinPrice(e.target.value)}
+                    min="0"
+                    step="0.01"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max price per night"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={stayMaxPrice}
+                    onChange={(e) => setStayMaxPrice(e.target.value)}
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Date / Date Range
+                </label>
+                <div className="mb-2">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <input
+                      type="checkbox"
+                      checked={isDateRange}
+                      onChange={(e) => setIsDateRange(e.target.checked)}
+                      className="rounded"
+                    />
+                    Use date range
+                  </label>
+                </div>
+                {isDateRange ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="date"
+                      placeholder="Start Date"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                    <input
+                      type="date"
+                      placeholder="End Date"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <input
+                    type="date"
+                    placeholder="Select date"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-700 dark:text-white"
+                    value={singleDate}
+                    onChange={(e) => setSingleDate(e.target.value)}
+                  />
+                )}
+              </div>
+
+              <button
+                onClick={handleSearch}
+                disabled={isSearching}
+                className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSearching ? 'Searching...' : 'Search Hotels'}
+              </button>
+
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                  <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                </div>
+              )}
             </div>
+
+            {searchResults && searchResults.hotels && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                  Available Hotels
+                </h3>
+                <div className="space-y-3">
+                  {searchResults.hotels.map((hotel: any, index: number) => (
+                    <div
+                      key={index}
+                      className="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-600 transition-all cursor-pointer"
+                      onClick={() => handleSelectOption(hotel)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            {hotel.hotel_name}
+                          </h4>
+                          {hotel.description && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                              {hotel.description}
+                            </p>
+                          )}
+                          {hotel.amenities && hotel.amenities.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {hotel.amenities.map((amenity: string, idx: number) => (
+                                <span
+                                  key={idx}
+                                  className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                                >
+                                  {amenity}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {hotel.rating && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              ⭐ {hotel.rating}/5
+                            </p>
+                          )}
+                          {hotel.address && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              📍 {hotel.address}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right ml-4">
+                          <p className="text-lg font-bold text-gray-900 dark:text-white">
+                            {hotel.price_per_night}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            per night
+                          </p>
+                        </div>
+                      </div>
+                      {hotel.source_url && (
+                        <a
+                          href={hotel.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          View source
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
