@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { formatDateDDMMYYYY } from '@/lib/dateUtils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,25 +26,63 @@ interface User {
   is_admin: boolean
 }
 
+interface Trip {
+  trip_id: number
+  trip_name: string
+  trip_description: string | null
+  start_date: string
+  end_date: string
+  cover_photo_url: string | null
+  total_budget: number | null
+  estimated_cost: number | null
+  is_public: boolean
+  view_count: number
+  copy_count: number
+  created_at: string
+  updated_at: string
+  users: {
+    user_id: number
+    email: string
+    full_name: string | null
+  }
+}
+
 export default function AdminPage() {
+  const [activeTab, setActiveTab] = useState<'analytics' | 'management'>('analytics')
   const [analytics, setAnalytics] = useState<any>(null)
   const [users, setUsers] = useState<User[]>([])
+  const [trips, setTrips] = useState<Trip[]>([])
   const [loading, setLoading] = useState(true)
   const [usersLoading, setUsersLoading] = useState(false)
+  const [tripsLoading, setTripsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [tripSearchTerm, setTripSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [tripsCurrentPage, setTripsCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [tripsTotalPages, setTripsTotalPages] = useState(1)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [showUserModal, setShowUserModal] = useState(false)
 
   useEffect(() => {
     fetchAnalytics()
-    fetchUsers()
-  }, [])
+    if (activeTab === 'management') {
+      fetchUsers()
+      fetchTrips()
+    }
+  }, [activeTab])
 
   useEffect(() => {
-    fetchUsers()
+    if (activeTab === 'management') {
+      fetchUsers()
+    }
   }, [searchTerm, currentPage])
+
+  useEffect(() => {
+    if (activeTab === 'management') {
+      fetchTrips()
+    }
+  }, [tripSearchTerm, tripsCurrentPage])
 
   const fetchAnalytics = async () => {
     try {
@@ -78,6 +117,23 @@ export default function AdminPage() {
       console.error('Error fetching users:', error)
     } finally {
       setUsersLoading(false)
+    }
+  }
+
+  const fetchTrips = async () => {
+    setTripsLoading(true)
+    try {
+      const res = await fetch(`/api/admin/trips?search=${tripSearchTerm}&page=${tripsCurrentPage}&limit=5`)
+      if (!res.ok) {
+        throw new Error('Failed to fetch trips')
+      }
+      const data = await res.json()
+      setTrips(data.trips || [])
+      setTripsTotalPages(data.pagination?.totalPages || 1)
+    } catch (error) {
+      console.error('Error fetching trips:', error)
+    } finally {
+      setTripsLoading(false)
     }
   }
 
@@ -162,10 +218,31 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-white pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Platform analytics and user management</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Platform analytics and user management</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={activeTab === 'analytics' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('analytics')}
+              className={activeTab === 'analytics' ? 'bg-green-800 hover:bg-green-900' : ''}
+            >
+              Analytics
+            </Button>
+            <Button
+              variant={activeTab === 'management' ? 'default' : 'outline'}
+              onClick={() => setActiveTab('management')}
+              className={activeTab === 'management' ? 'bg-green-800 hover:bg-green-900' : ''}
+            >
+              User & Trip Management
+            </Button>
+          </div>
         </div>
+
+        {activeTab === 'analytics' && (
+          <>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -308,33 +385,19 @@ export default function AdminPage() {
               </ChartContainer>
             </CardContent>
           </Card>
-
-          <Card className="border-2 border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900">Recent Trips</CardTitle>
-              <CardDescription>Latest trips created</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {analytics.recent_trips?.map((trip: any) => (
-                  <div key={trip.trip_id} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="font-medium text-gray-900">{trip.trip_name}</div>
-                    <div className="text-sm text-gray-600">
-                      by {trip.users?.full_name || 'Unknown'} • {formatDateDDMMYYYY(trip.created_at)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
-        {/* User Management */}
-        <Card className="border-2 border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-900">User Management</CardTitle>
-            <CardDescription>Manage platform users</CardDescription>
-          </CardHeader>
+          </>
+        )}
+
+        {activeTab === 'management' && (
+          <>
+            {/* User Management */}
+            <Card className="border-2 border-gray-200 mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900">User Management</CardTitle>
+                <CardDescription>Manage platform users</CardDescription>
+              </CardHeader>
           <CardContent>
             <div className="mb-4 flex gap-4">
               <div className="relative flex-1">
@@ -483,6 +546,113 @@ export default function AdminPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Trip Management */}
+        <Card className="border-2 border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-900">Trip Management</CardTitle>
+            <CardDescription>View and manage all trips</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4 flex gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Search trips by name or description..."
+                  value={tripSearchTerm}
+                  onChange={(e) => {
+                    setTripSearchTerm(e.target.value)
+                    setTripsCurrentPage(1)
+                  }}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {tripsLoading ? (
+              <div className="text-center py-8 text-gray-600">Loading trips...</div>
+            ) : (
+              <>
+                <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                  {trips.map((trip) => (
+                    <div key={trip.trip_id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <Link 
+                              href={`/trips/${trip.trip_id}`}
+                              className="font-semibold text-gray-900 hover:text-green-800 transition-colors"
+                            >
+                              {trip.trip_name}
+                            </Link>
+                            {trip.is_public && (
+                              <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                Public
+                              </span>
+                            )}
+                          </div>
+                          {trip.trip_description && (
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{trip.trip_description}</p>
+                          )}
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <span>by {trip.users?.full_name || trip.users?.email || 'Unknown'}</span>
+                            <span>•</span>
+                            <span>{formatDateDDMMYYYY(trip.created_at)}</span>
+                            {trip.view_count > 0 && (
+                              <>
+                                <span>•</span>
+                                <span>{trip.view_count} views</span>
+                              </>
+                            )}
+                            {trip.copy_count > 0 && (
+                              <>
+                                <span>•</span>
+                                <span>{trip.copy_count} copies</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {trips.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">No trips found</div>
+                )}
+
+                {tripsTotalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                    <div className="text-sm text-gray-600">
+                      Page {tripsCurrentPage} of {tripsTotalPages}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTripsCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={tripsCurrentPage === 1}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTripsCurrentPage(p => Math.min(tripsTotalPages, p + 1))}
+                        disabled={tripsCurrentPage === tripsTotalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+          </>
+        )}
       </div>
 
       {/* Edit User Modal */}
