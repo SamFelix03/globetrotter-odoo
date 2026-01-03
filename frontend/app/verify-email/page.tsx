@@ -1,0 +1,93 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+
+export default function VerifyEmailPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [verified, setVerified] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const checkVerification = async () => {
+      try {
+        const res = await fetch('/api/auth/verify-email')
+        const data = await res.json()
+
+        if (res.ok && data.verified) {
+          setVerified(true)
+        } else {
+          setError(data.error || 'Unable to verify email')
+        }
+        setLoading(false)
+      } catch (err: any) {
+        setError(err.message || 'An error occurred')
+        setLoading(false)
+      }
+    }
+
+    // Check if we came from the callback with verified=true
+    const fromCallback = searchParams.get('verified')
+    if (fromCallback === 'true') {
+      setVerified(true)
+      setLoading(false)
+    } else {
+      checkVerification()
+    }
+  }, [searchParams])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-lg">Verifying email...</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            {verified ? 'Email Verified!' : 'Email Verification'}
+          </h2>
+        </div>
+
+        {verified ? (
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded">
+            <p className="text-center mb-4">
+              Your email has been successfully verified! You can now sign in to your account.
+            </p>
+            <div className="text-center">
+              <Link
+                href="/login"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Go to Login
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 px-4 py-3 rounded">
+            <p className="text-center mb-4">
+              {error || 'Email verification is still pending. Please check your inbox and click the verification link.'}
+            </p>
+            <div className="text-center space-y-2">
+              <p className="text-sm">Didn't receive the email?</p>
+              <Link
+                href="/login"
+                className="text-blue-600 hover:text-blue-500 font-medium"
+              >
+                Go to Login
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+

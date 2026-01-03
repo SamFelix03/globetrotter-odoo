@@ -1,0 +1,134 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
+export default function TripsPage() {
+  const router = useRouter()
+  const [trips, setTrips] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchTrips()
+  }, [])
+
+  const fetchTrips = async () => {
+    try {
+      const res = await fetch('/api/trips')
+      const data = await res.json()
+      setTrips(data.trips || [])
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching trips:', error)
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (tripId: number) => {
+    if (!confirm('Are you sure you want to delete this trip?')) return
+
+    try {
+      const res = await fetch(`/api/trips/${tripId}`, { method: 'DELETE' })
+      if (res.ok) {
+        fetchTrips()
+      }
+    } catch (error) {
+      console.error('Error deleting trip:', error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Trips</h1>
+          <Link
+            href="/trips/create"
+            className="px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            + New Trip
+          </Link>
+        </div>
+
+        {trips.length === 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              You haven't created any trips yet.
+            </p>
+            <Link
+              href="/trips/create"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Plan Your First Trip
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trips.map((trip) => (
+              <div
+                key={trip.trip_id}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow"
+              >
+                {trip.cover_photo_url && (
+                  <img
+                    src={trip.cover_photo_url}
+                    alt={trip.trip_name}
+                    className="w-full h-48 object-cover rounded-t-lg"
+                  />
+                )}
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    {trip.trip_name}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    {new Date(trip.start_date).toLocaleDateString()} - {new Date(trip.end_date).toLocaleDateString()}
+                  </p>
+                  {trip.trip_description && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
+                      {trip.trip_description}
+                    </p>
+                  )}
+                  {trip.estimated_cost && (
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-4">
+                      Estimated: ${trip.estimated_cost.toFixed(2)}
+                    </p>
+                  )}
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/trips/${trip.trip_id}`}
+                      className="flex-1 text-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      href={`/trips/${trip.trip_id}/builder`}
+                      className="flex-1 text-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(trip.trip_id)}
+                      className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
